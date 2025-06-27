@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.extractGenericContent = void 0;
+exports.extractGenericContent = extractGenericContent;
 // extractor/readability.ts
 const axios_1 = __importDefault(require("axios"));
 const jsdom_1 = require("jsdom");
@@ -45,4 +45,3 @@ function extractGenericContent(url) {
         }
     });
 }
-exports.extractGenericContent = extractGenericContent;

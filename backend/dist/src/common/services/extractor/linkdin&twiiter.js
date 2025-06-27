@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = extractContentWithMicrolink;
 const axios_1 = __importDefault(require("axios"));
 function extractContentWithMicrolink(url) {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         const res = yield axios_1.default.get(`https://api.microlink.io?url=${encodeURIComponent(url)}&audio=true&video=true&meta=true`);
         const { data } = res;
         if (data.status === 'success') {
@@ -30,4 +31,3 @@ function extractContentWithMicrolink(url) {
         throw new Error('Failed to extract content');
     });
 }
-exports.default = extractContentWithMicrolink;

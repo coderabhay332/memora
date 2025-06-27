@@ -16,12 +16,34 @@ exports.upsertToPinecone = void 0;
 // pineconeService.ts
 const pinecone_config_1 = __importDefault(require("./pinecone.config"));
 const upsertToPinecone = (vectors) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
-        yield pinecone_config_1.default.upsert(vectors);
-        console.log("Successfully upserted vectors to Pinecone");
+        // Validate vectors before upsert
+        if (!vectors || vectors.length === 0) {
+            console.warn("No vectors provided for upsert");
+            return;
+        }
+        // Log first vector for debugging
+        console.log("First vector being upserted:", {
+            id: vectors[0].id,
+            valuesLength: (_a = vectors[0].values) === null || _a === void 0 ? void 0 : _a.length,
+            metadata: vectors[0].metadata
+        });
+        // Perform the upsert
+        const upsertResponse = yield pinecone_config_1.default.upsert(vectors);
+        console.log(`✅ Successfully upserted ${vectors.length} vectors to Pinecone`);
+        return upsertResponse;
     }
     catch (error) {
-        console.error("Failed to upsert to Pinecone:", error);
+        console.error("❌ Failed to upsert to Pinecone:", {
+            error: error instanceof Error ? error.message : error,
+            vectorsCount: vectors === null || vectors === void 0 ? void 0 : vectors.length,
+            sampleVector: (vectors === null || vectors === void 0 ? void 0 : vectors[0]) ? {
+                id: vectors[0].id,
+                valuesLength: (_b = vectors[0].values) === null || _b === void 0 ? void 0 : _b.length,
+                metadataKeys: vectors[0].metadata ? Object.keys(vectors[0].metadata) : null
+            } : null
+        });
         throw error;
     }
 });

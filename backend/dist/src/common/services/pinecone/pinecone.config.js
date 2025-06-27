@@ -10,5 +10,6 @@ dotenv_1.default.config();
 const pc = new pinecone_1.Pinecone({
     apiKey: (_a = process.env.PINECONE_API_KEY) !== null && _a !== void 0 ? _a : "",
 });
-const index = pc.Index((_b = process.env.PINECONE_INDEX_NAME) !== null && _b !== void 0 ? _b : "test-index");
+const indexName = (_b = process.env.PINECONE_INDEX_NAME) !== null && _b !== void 0 ? _b : "test-index";
+const index = pc.Index(indexName);
 exports.default = index;

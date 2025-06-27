@@ -4,9 +4,6 @@ import * as userController from "./user.controller";
 const router = Router();
 
 router.
-    post("/extract", userController.extract)
-    .post("/embeddings", userController.embeddings);
-
-
+  post("/create", userController.createUser);
 
 export default router;

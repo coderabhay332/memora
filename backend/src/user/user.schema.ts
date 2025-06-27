@@ -2,6 +2,7 @@ import mongoose, { model, Schema } from "mongoose";
 import { type IUser } from "./user.dto";
 import bcrypt from "bcrypt";
 
+
 const hashPassword = async (password: string) => {
     const hash = await bcrypt.hash(password, 12);
     return hash;

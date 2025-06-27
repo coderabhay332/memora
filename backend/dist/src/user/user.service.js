@@ -29,7 +29,7 @@ const getUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 exports.getUserById = getUserById;
-const getUserByEmail = (email, withPassword = false) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserByEmail = (email_1, ...args_1) => __awaiter(void 0, [email_1, ...args_1], void 0, function* (email, withPassword = false) {
     if (withPassword) {
         const result = yield user_schema_1.default.findOne({ email }).select('+password').lean();
         return result;
