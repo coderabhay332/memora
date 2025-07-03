@@ -27,10 +27,13 @@ const userSchema = new Schema<IUser>({
         enum: ["USER", "ADMIN"],
         default: "USER",
       },
-   
-        refreshToken: {
-            type: String,
-        }
+
+      content: [{
+              type: mongoose.Schema.Types.ObjectId, ref: "Content", required: true 
+            }],
+            refreshToken: {
+                type: String,
+            }
 });
  
 

@@ -64,12 +64,18 @@ const passport_1 = __importDefault(require("passport"));
 const passport_jwt_1 = require("passport-jwt");
 const passport_local_1 = require("passport-local");
 const userService = __importStar(require("../../user/user.service"));
-require('dotenv').config();
+const user_schema_1 = __importDefault(require("../../user/user.schema"));
+const config_helper_1 = require("../helper/config.helper");
+(0, config_helper_1.loadConfig)();
 const isValidPassword = function (value, password) {
     return __awaiter(this, void 0, void 0, function* () {
         const compare = yield bcrypt_1.default.compare(value, password);
         return compare;
     });
+};
+const options = {
+    jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET || 'default_secret',
 };
 const initPassport = () => {
     passport_1.default.use(new passport_jwt_1.Strategy({
@@ -85,6 +91,26 @@ const initPassport = () => {
         }
         catch (error) {
             done(error);
+        }
+    })));
+    passport_1.default.use(new passport_jwt_1.Strategy(options, (jwtPayload, done) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            console.log("JWT Payload received:", jwtPayload);
+            if (!jwtPayload.id) {
+                console.error("No user ID in JWT payload");
+                return done(null, false);
+            }
+            const user = yield user_schema_1.default.findById(jwtPayload.id).select("-password");
+            console.log("User lookup result:", user === null || user === void 0 ? void 0 : user._id);
+            if (user) {
+                return done(null, user);
+            }
+            console.error("No user found for ID:", jwtPayload.id);
+            return done(null, false);
+        }
+        catch (error) {
+            console.error("Passport JWT Error:", error);
+            return done(error, false);
         }
     })));
     // user login
@@ -118,7 +144,7 @@ const createUserTokens = (user) => {
     const accessTokenSecret = (_a = process.env.JWT_ACCESS_SECRET) !== null && _a !== void 0 ? _a : '';
     const refreshTokenSecret = (_b = process.env.JWT_REFRESH_SECRET) !== null && _b !== void 0 ? _b : '';
     const payload = {
-        id: user._id,
+        _id: user._id,
         email: user.email,
         role: user.role,
     };

@@ -12,13 +12,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.upsertToPinecone = void 0;
+exports.upsertToPinecone = exports.deleteFromPinecone = void 0;
 // pineconeService.ts
 const pinecone_config_1 = __importDefault(require("./pinecone.config"));
+const deleteFromPinecone = (contentId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Debug: Check index stats
+        const indexDescription = yield pinecone_config_1.default.describeIndexStats();
+        console.log("Index capabilities:", indexDescription);
+        // Correct filter syntax for Pinecone
+        yield pinecone_config_1.default.deleteMany({
+            contentId: contentId // Simple equality test (alternative syntax)
+        });
+        console.log(`✅ Successfully deleted vectors for contentId: ${contentId}`);
+    }
+    catch (error) {
+        console.error(`❌ Error deleting vectors for contentId ${contentId}:`, error);
+        throw error;
+    }
+});
+exports.deleteFromPinecone = deleteFromPinecone;
 const upsertToPinecone = (vectors) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
         // Validate vectors before upsert
+        const stats = yield pinecone_config_1.default.describeIndexStats();
+        console.log("Full Index Stats:", JSON.stringify(stats, null, 2));
+        // More detailed inspection
+        console.log("Does index exist?", stats.dimension ? "Yes" : "No");
+        console.log("Index dimension:", stats.dimension);
+        console.log("Namespaces:", Object.keys(stats.namespaces || {}));
         if (!vectors || vectors.length === 0) {
             console.warn("No vectors provided for upsert");
             return;

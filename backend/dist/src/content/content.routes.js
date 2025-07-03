@@ -32,19 +32,17 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const userController = __importStar(require("./user.controller"));
-const userValidation = __importStar(require("./user.validaton"));
-const passport_1 = __importDefault(require("passport"));
+const contentController = __importStar(require("./content.controller"));
 const role_auth_middleware_1 = require("../common/middleware/role-auth.middleware");
 const router = (0, express_1.Router)();
-router.
-    post("/create", userValidation.createUser, userController.createUser)
-    .post("/login", userValidation.login, passport_1.default.authenticate('login', { session: false }), userController.login)
-    .post("/refresh-token", userValidation.refreshToken, userController.refreshToken)
-    .get("/me", (0, role_auth_middleware_1.roleAuth)(["USER", "admin"]), userController.me);
+router
+    .post("/create", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.createContent)
+    .get("/all", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.getAllContent)
+    .put("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.updateContent)
+    .get("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.getContentById)
+    .delete("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.deleteContent)
+    .post("/search", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.searchPinecone)
+    .post("/rag", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.rag);
 exports.default = router;

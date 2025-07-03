@@ -45,44 +45,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const hashPassword = (password) => __awaiter(void 0, void 0, void 0, function* () {
-    const hash = yield bcrypt_1.default.hash(password, 12);
-    return hash;
-});
-const userSchema = new mongoose_1.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    role: {
-        type: String,
-        enum: ["USER", "ADMIN"],
-        default: "USER",
-    },
-    content: [{
-            type: mongoose_1.default.Schema.Types.ObjectId, ref: "Content", required: true
-        }],
-    refreshToken: {
-        type: String,
-    }
-});
-userSchema.pre("save", function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (this.isModified("password")) {
-            this.password = yield hashPassword(this.password);
-        }
-        next();
-    });
-});
-exports.default = (0, mongoose_1.model)("User", userSchema);
+exports.addMessage = exports.deleteChat = exports.getChat = exports.createChat = void 0;
+const express_async_handler_1 = __importDefault(require("express-async-handler"));
+const chatService = __importStar(require("./chat.service"));
+exports.createChat = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const result = yield chatService.createChat(userId);
+    res.status(201).json(result);
+}));
+exports.getChat = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const result = yield chatService.getChat(req.params.id, userId);
+    res.status(200).json(result);
+}));
+exports.deleteChat = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const result = yield chatService.deleteChat(req.params.id, userId);
+    res.status(200).json(result);
+}));
+exports.addMessage = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const { role } = req.body;
+    const result = yield chatService.addMessage(req.params.id, role, req.body.message, userId);
+    res.status(201).json(result);
+}));

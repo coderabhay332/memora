@@ -24,6 +24,7 @@ const database_services_1 = require("./src/common/services/database.services");
 const passport_jwt_services_1 = require("./src/common/services/passport-jwt.services");
 const routes_1 = __importDefault(require("./src/routes"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const rabbitmq_service_1 = require("./src/common/services/rabbitmq.service");
 dotenv_1.default.config();
 const port = (_a = Number(process.env.PORT)) !== null && _a !== void 0 ? _a : 5000;
 const app = (0, express_1.default)();
@@ -39,6 +40,7 @@ app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
 const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
     // init mongodb
+    (0, rabbitmq_service_1.connectRabbitMQ)();
     yield (0, database_services_1.initDB)();
     // passport init
     (0, passport_jwt_services_1.initPassport)();

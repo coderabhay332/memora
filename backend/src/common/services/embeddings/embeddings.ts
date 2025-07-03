@@ -2,7 +2,7 @@ import { pipeline } from '@xenova/transformers';
 
 
 
-const getEmbeddings = async (text: string) => {
+const getEmbeddings = async (text: string, userId: string) => {
 
     const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
 

@@ -10,7 +10,7 @@ import { initPassport } from "./src/common/services/passport-jwt.services";
 import { IUser } from "./src/user/user.dto";
 import routes from "./src/routes";
 import dotenv from "dotenv";
-
+import { connectRabbitMQ } from "./src/common/services/rabbitmq.service";
 dotenv.config();
 
 declare global {
@@ -41,6 +41,7 @@ declare global {
   app.use(morgan("dev")); 
   const initApp = async (): Promise<void> => {
     // init mongodb
+    connectRabbitMQ() 
     await initDB();
   
     // passport init

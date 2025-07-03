@@ -1,18 +1,19 @@
-import { BaseSchema } from "../common/dto/base.dto";
+import mongoose from "mongoose";
 
-export interface IChat extends BaseSchema {
-    userId: string;
-    messages: IMessage[];
-}
 
-export interface IMessage extends BaseSchema {
-    senderId: string;
-    content: string;
-    timestamp: Date;
-}
+const messageSchema = new mongoose.Schema({
+  role: { type: String, enum: ["user", "assistant"], required: true },
+  message: { type: String, required: true },
+}, { timestamps: true });
 
-export interface ISession extends BaseSchema {
-    userId: string;
-    chatId: string;
-    lastActive: Date;
-}
+export const Message = mongoose.model("Message", messageSchema);
+
+
+const chatSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  title: { type: String, default: "New Chat" },
+  messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
+  lastActive: { type: Date, default: Date.now },
+}, { timestamps: true });
+
+export const Chat = mongoose.model("Chat", chatSchema);

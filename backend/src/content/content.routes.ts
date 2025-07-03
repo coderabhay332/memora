@@ -1,12 +1,16 @@
 import { Router } from "express";
-import * as userController from "./content.controller";
-
+import * as contentController from "./content.controller";
+import { roleAuth } from "../common/middleware/role-auth.middleware";
 const router = Router();
 
-router.
-   post("/extract", userController.extract)
-  .post("/search", userController.searchPinecone)
-  .post("/rag", userController.rag);
+router
+  .post("/create", roleAuth(["USER"]), contentController.createContent)
+  .get("/all", roleAuth(["USER"]), contentController.getAllContent)
+  .put("/:id", roleAuth(["USER"]), contentController.updateContent)
+  .get("/:id", roleAuth(["USER"]), contentController.getContentById)
+  .delete("/:id", roleAuth(["USER"]), contentController.deleteContent)
+  .post("/search", roleAuth(["USER"]), contentController.searchPinecone)
+  .post("/chat/:id", roleAuth(["USER"]), contentController.rag);
 
 export default router;
     

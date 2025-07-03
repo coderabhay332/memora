@@ -2,13 +2,12 @@ import { response, type Request, type Response } from 'express';
 import asyncHandler from "express-async-handler";
 import { createResponse } from "../common/helper/response.helper";
 import pinecone  from '../common/services/pinecone/pinecone.config';
-import extractMedium from '../common/services/extractor/medium';
-import extractContentWithMicrolink from '../common/services/extractor/linkdin&twiiter';
-import { extractGenericContent } from '../common/services/extractor/generic';
-import { upsertToPinecone } from '../common/services/pinecone/pineconeService';
+import * as contentService from './content.service';
 import { getEmbeddings } from '../common/services/embeddings/embeddings';
-import { generateDeterministicId } from '../common/services/idGenerator.service';
 import { askGemini } from '../common/services/RAG/gemini.service';
+import { IUser } from '../user/user.dto';
+import { getChannel } from '../common/services/rabbitmq.service';
+import { askOpenAI } from '../common/services/RAG/gpt.service';
 type PineconeRecord = {
   id: string;
   values?: number[];
@@ -18,195 +17,35 @@ type PineconeRecord = {
 
 
 
-export const extract = asyncHandler(async (req: Request, res: Response) => {
-  const urlRegex = /https?:\/\/[^\s]+/g;
-  const text = req.body.text || '';
- 
-
-  const links = text.match(urlRegex) || [];
-  const cleanText = text.replace(urlRegex, '').replace(/\s+/g, ' ').trim();
-  console.log("extract called with text:", cleanText, "and links:", links);
-
-  // Validate and tag links
-  const validLinks = links.filter((link: string) => {
-    try {
-      new URL(link);
-      return true;
-    } catch {
-      return false;
-    }
-  });
-
-  const taggedLinks = validLinks.map((link: string) => {
-    const domain = new URL(link).hostname;
-    let tag: string;
-
-    if (domain.includes("x.com") || domain.includes("twitter.com")) tag = "twitter";
-    else if (domain.includes("medium.com")) tag = "medium";
-    else if (domain.includes("linkedin.com")) tag = "linkedin";
-    else tag = "generic";
-
-    res.send(createResponse({ url: link, tag }, "Link tagged successfully"));
-    return
-  });
-
-  const extractorMap: Record<string, (url: string) => Promise<any>> = {
-    medium: extractMedium,
-    linkedin: extractContentWithMicrolink,
-    twitter: extractContentWithMicrolink,
-    generic: extractGenericContent,
-  };
-
-  const processLinks = async (links: Array<{ url: string; tag: string }>) => {
-    return await Promise.all(
-      links.map(async (link) => {
-        try {
-          const extractorFn = extractorMap[link.tag] || extractGenericContent;
-          const content = await extractorFn(link.url);
-          const actualText = typeof content === 'string' ? content : content?.content || content?.text || '';
-
-          if (!actualText) throw new Error('No content found.');
-
-          const chunks = chunkText(actualText.trim(), 1000);
-          const vectors: PineconeRecord[] = [];
-
-          for (let i = 0; i < chunks.length; i++) {
-            const chunk = chunks[i];
-            const chunkId = generateDeterministicId(`${link.url}|${i}`);
-
-            const fetched = await pinecone.fetch([chunkId]);
-            if (fetched.records[chunkId]) {
-              console.log(`🔁 Skipping existing chunk: ${chunkId}`);
-              continue;
-            }
-
-            const embedding = await getEmbeddings(chunk);
-
-            vectors.push({
-              id: chunkId,
-              values: Array.from(embedding),
-              metadata: {
-                url: link.url,
-                tag: link.tag,
-                chunkIndex: i,
-                content: chunk,
-                createdAt: new Date().toISOString(),
-              },
-            });
-          }
-
-          if (vectors.length > 0) {
-            const validVectors = vectors.filter(v => v.values !== undefined) as Required<typeof vectors[number]>[];
-            await upsertToPinecone(validVectors);
-          }
-
-          return {
-            url: link.url,
-            chunks: vectors.length,
-            success: true,
-            skipped: false,
-          };
-        } catch (error: any) {
-          console.error(`Error processing ${link.url}:`, error);
-          return {
-            url: link.url,
-            chunks: 0,
-            success: false,
-            error: error.message,
-          };
-        }
-      })
-    );
-  };
-
-  // 🟡 Process links if present
-  let allResults: any[] = [];
-  if (taggedLinks.length > 0) {
-    allResults = await processLinks(taggedLinks);
-  }
-
-  // 🟢 Process clean text even if no links exist
-  if (cleanText) {
-  const cleanChunks = chunkText(cleanText, 1000);
-  const vectors: PineconeRecord[] = [];
-
-  for (let i = 0; i < cleanChunks.length; i++) {
-    const chunk = cleanChunks[i];
-    const chunkId = generateDeterministicId(cleanText + i);
-    console.log(chunkId, chunk);
-
-    const fetched = await pinecone.fetch([chunkId]);
-    if (fetched.records && fetched.records[chunkId]) {
-      console.log(`🔁 Skipping existing text chunk: ${chunkId}`);
-      continue;
-    }
-
-    const embedding = await getEmbeddings(chunk);
-
-    vectors.push({
-      id: chunkId,
-      values: Array.from(embedding),
-      metadata: {
-        tag: 'manual-input',
-        content: chunk,// Use actual user ID instead of "demo"
-        chunkIndex: i,
-        createdAt: new Date().toISOString(),
-      },
-    });
-  }
-
-  if (vectors.length > 0) {
-    // Filter out any vectors without values and cast to required type
-    const validVectors = vectors.filter(v => v.values && v.values.length > 0) as {
-      id: string;
-      values: number[];
-      metadata: Record<string, any>;
-    }[];
-    
-    if (validVectors.length > 0) {
-      await upsertToPinecone(validVectors);
-      console.log(`✅ Successfully upserted ${validVectors.length} manual text chunks`);
-    } else {
-      console.log('⚠️ No valid vectors to upsert for manual text');
-    }
-  }
-
-  allResults.push({
-    source: 'manual-text',
-    chunks: vectors.length,
-    success: vectors.length > 0,
-    skipped: false,
-  });
-}  // 🧾 Final Response
-
-res.send(createResponse(allResults, "Content extraction and upsert completed successfully"));
-});
-//   res.status(200).json({
-//     count: allResults.length,
-//     successful: allResults.filter(r => r.success).length,
-//     failed: allResults.filter(r => !r.success).length,
-//     results: allResults,
-//   });
-// });
-
 export const searchPinecone = asyncHandler(async (req: Request, res: Response) => {
-  const queryVector = await getEmbeddings(req.body.query);
+  const userId = req.user?._id
+  if (!userId) {
+    res.status(400).send(createResponse(null, "User ID is required"));
+    return;
+  }
+  const queryVector = await getEmbeddings(req.body.query, userId);
 
 
   const results = await pinecone.query({
     vector: Array.from(queryVector),
     topK: 5,
     includeMetadata: true,
+    filter: {
+      userId: req.body.userId, // Filter by user ID if provided
+    }
   });
   
   res.send(createResponse(results, "Search results retrieved successfully"));
 });
 
-const search = async (queryVector: number[] | Float32Array) => {
+const search = async (queryVector: number[] | Float32Array, userId: string) => {
   const results = await pinecone.query({
     vector: Array.from(queryVector),
     topK: 5,
     includeMetadata: true,
+    filter: {
+      userId: userId,
+    }
   });
   return results;
 };
@@ -220,13 +59,103 @@ const chunkText = (text: string, chunkSize = 2000): string[] => {
 
 
 export const rag = asyncHandler(async (req: Request, res: Response) => {
+  const chatId = req.query.chatId; // Optional chat ID
+  if (!chatId || typeof chatId !== 'string') {
+    res.status(400).send(createResponse(null, "Chat ID is required"));
+    return;
+  }
   const query = req.body.query;
-    const queryEmbeddings = await getEmbeddings(req.body.query);
-  const contextResults = await search(Array.from(queryEmbeddings));
-  const results = await search(Array.from(queryEmbeddings));
+  const userId = req.user?._id;
+  if (!query || !userId) {
+    res.status(400).send(createResponse(null, "Query and User ID are required"));
+    return;
+  }
+
+  const queryEmbeddings = await getEmbeddings(req.body.query, userId);
+  const contextResults = await search(Array.from(queryEmbeddings), userId);
+  const results = await search(Array.from(queryEmbeddings), userId);
   const context = results.matches?.map(r => r.metadata?.content).join('\n\n') || '';
 
-  const answer = await askGemini(context, query);
+  const answer = await askGemini(userId, chatId, context, query);
 
   res.send(createResponse({ answer }, "RAG response generated successfully"));
+});
+
+
+export const createContent = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req.user as IUser)._id;
+  console.log("userId", userId);
+  if(!userId){
+     res.status(400).send(createResponse(null, "User ID is required"));
+    return;
+  }
+  const result = await contentService.createContent(req.body.content, userId);
+  const channel = await getChannel();
+  if (!channel) {
+    res.status(500).send(createResponse(null, "Failed to create RabbitMQ channel"));
+    return;
+  }
+   channel.sendToQueue(
+    'embedding_jobs',
+    Buffer.from(JSON.stringify({ contentId: result._id, userId }))
+  );
+  
+
+  res.send(createResponse(result, "Content created successfully"));
+});
+
+export const getAllContent = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req.user as IUser)._id;
+  if(!userId){
+     res.status(400).send(createResponse(null, "User ID is required"));
+    return;
+  }
+  const result = await contentService.getAllContent(userId);
+  res.send(createResponse(result, "All content fetched successfully"));
+});
+export const getContentById = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req.user as IUser)._id;
+  if(!userId){
+     res.status(400).send(createResponse(null, "User ID is required"));
+    return;
+  }
+  const result = await contentService.getContentById(req.params.id, userId);
+  res.send(createResponse(result, "Content fetched successfully"));
+});
+
+export const updateContent = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req.user as IUser)._id;
+  if(!userId){
+     res.status(400).send(createResponse(null, "User ID is required"));
+    return;
+  }
+  const result = await contentService.updateContent(req.params.id, req.body.content, userId);
+  res.send(createResponse(result, "Content updated successfully"));
+});
+
+export const deleteContent = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req.user as IUser)._id;
+  if(!userId){
+     res.status(400).send(createResponse(null, "User ID is required"));
+    return;
+  }
+  const result = await contentService.deleteContent(req.params.id, userId);
+
+  if (!result) {
+    res.status(404).send(createResponse(null, "Content not found"));
+    return;
+  }
+
+  const channel = await getChannel();
+  if (!channel) {
+    console.error("Failed to get channel");
+    return;
+  }
+
+  channel.sendToQueue(
+    'delete_jobs',
+    Buffer.from(JSON.stringify({ contentId: result._id, userId }))
+  );
+
+  res.send(createResponse(result, "Content deleted successfully"));
 });

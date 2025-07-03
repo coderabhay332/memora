@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getEmbeddings = void 0;
 const transformers_1 = require("@xenova/transformers");
-const getEmbeddings = (text) => __awaiter(void 0, void 0, void 0, function* () {
+const getEmbeddings = (text, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const extractor = yield (0, transformers_1.pipeline)('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
     const output = yield extractor(text, {
         pooling: 'mean',

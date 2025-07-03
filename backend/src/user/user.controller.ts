@@ -1,44 +1,53 @@
-import { response, type Request, type Response } from 'express';
-import asyncHandler from "express-async-handler";
-import { createResponse } from "../common/helper/response.helper";
-import { createUserTokens } from '../common/services/passport-jwt.services';
-import { type IUser } from "./user.dto";    
 import * as userService from "./user.service";
-import pinecone  from '../common/services/pinecone/pinecone.config';
-import extractMedium from '../common/services/extractor/medium';
-import extractContentWithMicrolink from '../common/services/extractor/linkdin&twiiter';
-import { extractGenericContent } from '../common/services/extractor/generic';
-import { upsertToPinecone } from '../common/services/pinecone/pineconeService';
-import { getEmbeddings } from '../common/services/embeddings/embeddings';
-import { generateDeterministicId } from '../common/services/idGenerator.service';
-import { rag as ragService } from '../common/services/RAG/rag.config';
-import { askGemini } from '../common/services/RAG/gemini.service';
-type PineconeRecord = {
-  id: string;
-  values?: number[];
-  text?: string;
-  metadata?: Record<string, any>;
-};
+import { createResponse } from "../common/helper/response.helper";
+import asyncHandler from "express-async-handler";
+import { type Request, type Response } from "express";
+import { createUserTokens } from "../common/services/passport-jwt.services";
+import { IUser } from "./user.dto";
 
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
-  const { email, name } = req.body;
   const result = await userService.createUser(req.body);
-  const { password, ...user } = result;
-  res.send(createResponse(user, "User created successfully"));
+  res.send(createResponse(result, "User created sucssefully"));
+});
+export const me = asyncHandler(async (req: Request, res: Response) => {
+  console.log("req.user", req.user);
+  const result = await userService.me(req.user as IUser);
+  res.send(createResponse(result, "User fetched sucssefully"));
+});
+
+export const updateUser = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.updateUser(req.params.id, req.body);
+  res.send(createResponse(result, "User updated sucssefully"));
+});
+
+export const editUser = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.editUser(req.params.id, req.body);
+  res.send(createResponse(result, "User updated sucssefully"));
+});
+
+export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.deleteUser(req.params.id);
+  res.send(createResponse(result, "User deleted sucssefully"));
+});
+
+export const getUserById = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.getUserById(req.params.id);
+  res.send(createResponse(result));
+});
+
+export const getAllUser = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.getAllUser();
+  res.send(createResponse(result));
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const user = req.user as IUser;
-  const tokens = createUserTokens(user);
-  res.send(
-    createResponse({
-      ...tokens,
-      user: {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-      },
-    })
-  );
+  const tokens = createUserTokens(req.user as IUser)
+  console.log(req.user);
+  const updateUserToken = await userService.updateUserToken(req.user as IUser, tokens.refreshToken)
+  res.send(createResponse({...tokens, user: req.user}, "Login successful"))
 });
 
+export const refreshToken = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.refreshToken(req.body.refreshToken);
+  res.send(createResponse(result, "Token refreshed sucssefully"));
+});
