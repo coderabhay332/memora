@@ -91,6 +91,12 @@ const chunkText = (text, chunkSize = 2000) => {
 };
 exports.rag = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
+    const { chatId } = req.params; // Optional chat ID
+    console.log("chatId", chatId);
+    if (!chatId || typeof chatId !== 'string') {
+        res.status(400).send((0, response_helper_1.createResponse)(null, "Chat ID is required"));
+        return;
+    }
     const query = req.body.query;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
     if (!query || !userId) {
@@ -101,7 +107,7 @@ exports.rag = (0, express_async_handler_1.default)((req, res) => __awaiter(void 
     const contextResults = yield search(Array.from(queryEmbeddings), userId);
     const results = yield search(Array.from(queryEmbeddings), userId);
     const context = ((_b = results.matches) === null || _b === void 0 ? void 0 : _b.map(r => { var _a; return (_a = r.metadata) === null || _a === void 0 ? void 0 : _a.content; }).join('\n\n')) || '';
-    const answer = yield (0, gemini_service_1.askGemini)(context, query);
+    const answer = yield (0, gemini_service_1.askGemini)(userId, chatId, context, query);
     res.send((0, response_helper_1.createResponse)({ answer }, "RAG response generated successfully"));
 }));
 exports.createContent = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -6,6 +6,7 @@ const router = Router();
 router
   .post("/create", roleAuth(["USER"]), contentController.createContent)
   .get("/all", roleAuth(["USER"]), contentController.getAllContent)
+  .post("/rag/:chatId", roleAuth(["USER"]), contentController.rag)
   .put("/:id", roleAuth(["USER"]), contentController.updateContent)
   .get("/:id", roleAuth(["USER"]), contentController.getContentById)
   .delete("/:id", roleAuth(["USER"]), contentController.deleteContent)

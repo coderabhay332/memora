@@ -40,9 +40,10 @@ const router = (0, express_1.Router)();
 router
     .post("/create", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.createContent)
     .get("/all", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.getAllContent)
+    .post("/rag/:chatId", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.rag)
     .put("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.updateContent)
     .get("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.getContentById)
     .delete("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.deleteContent)
     .post("/search", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.searchPinecone)
-    .post("/rag", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.rag);
+    .post("/chat/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.rag);
 exports.default = router;
