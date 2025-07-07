@@ -59,7 +59,8 @@ const chunkText = (text: string, chunkSize = 2000): string[] => {
 
 
 export const rag = asyncHandler(async (req: Request, res: Response) => {
-  const chatId = req.query.chatId; // Optional chat ID
+  const {chatId} = req.params; // Optional chat ID
+  console.log("chatId", chatId);
   if (!chatId || typeof chatId !== 'string') {
     res.status(400).send(createResponse(null, "Chat ID is required"));
     return;

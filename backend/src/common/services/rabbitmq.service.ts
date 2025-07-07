@@ -3,7 +3,7 @@ import ampq from 'amqplib';
 let channel: ampq.Channel | null = null;
 export const connectRabbitMQ = async () => {
   try {
-    const connection = await ampq.connect( 'amqp://localhost');
+    const connection = await ampq.connect( process.env.RABBITMQ_URL || 'amqp://localhost');
     channel = await connection.createChannel();
     await channel.assertQueue('embedding_jobs', { durable: true });
     console.log('✅ RabbitMQ connected successfully');

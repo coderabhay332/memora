@@ -17,7 +17,7 @@ const amqplib_1 = __importDefault(require("amqplib"));
 let channel = null;
 const connectRabbitMQ = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const connection = yield amqplib_1.default.connect('amqp://localhost');
+        const connection = yield amqplib_1.default.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
         channel = yield connection.createChannel();
         yield channel.assertQueue('embedding_jobs', { durable: true });
         console.log('✅ RabbitMQ connected successfully');
