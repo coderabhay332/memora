@@ -5,7 +5,7 @@ import { getChannel } from "../../common/services/rabbitmq.service";
 import index from "../../common/services/pinecone/pinecone.config";
 
 // Initialize database connection
-initDB();
+
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 5000;
@@ -13,7 +13,7 @@ const RETRY_DELAY_MS = 5000;
 const startDeleteWorker = async () => {
   try {
     console.log('🔌 Connecting to RabbitMQ...');
-    const conn = await amqp.connect('amqp://localhost');
+    const conn = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
     console.log('✅ Connected to RabbitMQ');
 
     const channel = await conn.createChannel();

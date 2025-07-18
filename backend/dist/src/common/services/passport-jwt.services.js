@@ -148,7 +148,7 @@ const createUserTokens = (user) => {
         email: user.email,
         role: user.role,
     };
-    const accessToken = jsonwebtoken_1.default.sign(payload, accessTokenSecret, { expiresIn: '1d' });
+    const accessToken = jsonwebtoken_1.default.sign(payload, accessTokenSecret, { expiresIn: '15m' });
     const refreshToken = jsonwebtoken_1.default.sign(payload, refreshTokenSecret, { expiresIn: '7d' });
     return { accessToken, refreshToken };
 };

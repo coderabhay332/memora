@@ -81,6 +81,7 @@ export const login = async (email: string, password: string) => {
   return user;
 };
 
+
 export const getUserByEmail = async (email: string, withPassword = false) => {
   if (withPassword) {
       const result = await userSchema.findOne({ email }).select('+password').lean();
@@ -97,42 +98,26 @@ export const updateUserToken = async (user: IUser, refreshToken: string) => {
   return result;
 };
 
-export const refreshToken = async (refreshToken: string) => {
-  try {
-    const user = await userSchema.findOne({ refreshToken: refreshToken });
-    console.log("user", user);
-    if (!user) {
-      throw new Error("Invalid refresh token");
-    }
-    const tokens = createUserTokens(user as IUser)
-    
-    // Generate new tokens
-    const newAccessToken = tokens.accessToken
+export const refreshToken = async (user: IUser, refreshToken: string) => {
+  if (!refreshToken) throw new Error("No refresh token provided");
 
-    const newRefreshToken = tokens.refreshToken
+  const userData = await userSchema.findOne({ refreshToken });
+  if (!userData) throw new Error("Invalid refresh token");
+  console.log("user", userData);
+  const tokens = createUserTokens(userData as IUser);
+  if (!tokens) throw new Error("Failed to create tokens");
+  const newRefreshToken = tokens.refreshToken;
 
-    await userSchema.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
-
-    return {
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    };
-  } catch (error) {
-    throw new Error("Invalid refresh token");
-  }
+  const data = await userSchema.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
+  console.log("data", data);
+  return {
+    accessToken: tokens.accessToken,
+    refreshToken: newRefreshToken,
+    user: {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+    },
+  };
 };
 
-
-export const getAppByUserId = async (userId: string) => {
-  const user = await userSchema.findById(userId).populate('apps').lean();
-  if (!user) {
-    throw new Error('User not found');
-  }
-  return user;
-};

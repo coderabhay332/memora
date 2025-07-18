@@ -12,6 +12,7 @@ type PineconeRecord = {
   id: string;
   values?: number[];
   text?: string;
+  contentId?: string;
   metadata?: Record<string, any>;
 };
 
@@ -75,9 +76,15 @@ export const rag = asyncHandler(async (req: Request, res: Response) => {
   const queryEmbeddings = await getEmbeddings(req.body.query, userId);
   const contextResults = await search(Array.from(queryEmbeddings), userId);
   const results = await search(Array.from(queryEmbeddings), userId);
+  const contentIdRaw = results.matches[0]?.metadata?.contentId;
+  if (!contentIdRaw) {
+    res.status(404).send(createResponse(null, "Content not found"));
+    return;
+  }
+  const contentId = String(contentIdRaw);
   const context = results.matches?.map(r => r.metadata?.content).join('\n\n') || '';
 
-  const answer = await askGemini(userId, chatId, context, query);
+  const answer = await askGemini(userId, chatId, context, query, contentId);
 
   res.send(createResponse({ answer }, "RAG response generated successfully"));
 });

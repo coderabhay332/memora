@@ -9,7 +9,7 @@ const router = Router();
 router.
   post("/create", userValidation.createUser, userController.createUser)
   .post("/login", userValidation.login, passport.authenticate('login', { session: false }), userController.login)
-  .post("/refresh-token", userValidation.refreshToken, userController.refreshToken)
+  .post("/refresh", userValidation.refreshToken, userController.refreshToken)
   .get("/me", roleAuth(["USER", "admin"]), userController.me);
 
 

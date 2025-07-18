@@ -40,7 +40,7 @@ const chunkText = (text: string, chunkSize = 2000): string[] => {
 const startEmbeddingWorker = async () => {
   try {
     console.log('🔌 Connecting to RabbitMQ...');
-    const conn = await amqp.connect('amqp://localhost');
+    const conn = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
     console.log('✅ Connected to RabbitMQ');
 
     const channel = await conn.createChannel();

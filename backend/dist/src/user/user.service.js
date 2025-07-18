@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAppByUserId = exports.refreshToken = exports.updateUserToken = exports.getUserByEmail = exports.login = exports.getAllUser = exports.getUserById = exports.deleteUser = exports.editUser = exports.me = exports.updateUser = exports.createUser = exports.generateRefreshToken = void 0;
+exports.refreshToken = exports.updateUserToken = exports.getUserByEmail = exports.login = exports.getAllUser = exports.getUserById = exports.deleteUser = exports.editUser = exports.me = exports.updateUser = exports.createUser = exports.generateRefreshToken = void 0;
 const user_schema_1 = __importDefault(require("./user.schema"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const passport_jwt_services_1 = require("../common/services/passport-jwt.services");
@@ -95,39 +95,27 @@ const updateUserToken = (user, refreshToken) => __awaiter(void 0, void 0, void 0
     return result;
 });
 exports.updateUserToken = updateUserToken;
-const refreshToken = (refreshToken) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = yield user_schema_1.default.findOne({ refreshToken: refreshToken });
-        console.log("user", user);
-        if (!user) {
-            throw new Error("Invalid refresh token");
-        }
-        const tokens = (0, passport_jwt_services_1.createUserTokens)(user);
-        // Generate new tokens
-        const newAccessToken = tokens.accessToken;
-        const newRefreshToken = tokens.refreshToken;
-        yield user_schema_1.default.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
-        return {
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
-        };
-    }
-    catch (error) {
+const refreshToken = (user, refreshToken) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!refreshToken)
+        throw new Error("No refresh token provided");
+    const userData = yield user_schema_1.default.findOne({ refreshToken });
+    if (!userData)
         throw new Error("Invalid refresh token");
-    }
+    console.log("user", userData);
+    const tokens = (0, passport_jwt_services_1.createUserTokens)(userData);
+    if (!tokens)
+        throw new Error("Failed to create tokens");
+    const newRefreshToken = tokens.refreshToken;
+    const data = yield user_schema_1.default.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
+    console.log("data", data);
+    return {
+        accessToken: tokens.accessToken,
+        refreshToken: newRefreshToken,
+        user: {
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+        },
+    };
 });
 exports.refreshToken = refreshToken;
-const getAppByUserId = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_schema_1.default.findById(userId).populate('apps').lean();
-    if (!user) {
-        throw new Error('User not found');
-    }
-    return user;
-});
-exports.getAppByUserId = getAppByUserId;

@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 const MAX_TOKENS = 4096; // Adjust based on your model's limits
 
-export const askGemini = async (userId: string, chatId: string | null, context: string, query: string) => {
+export const askGemini = async (userId: string, chatId: string | null, context: string, query: string, contentId: string) => {
   // Input validation
   if (!query?.trim()) throw new Error("Query cannot be empty");
   if (!context?.trim()) console.warn("Context is empty"); // Warning instead of error
@@ -46,6 +46,7 @@ export const askGemini = async (userId: string, chatId: string | null, context: 
   try {
     const result = await model.generateContent([prompt]);
     const response = await result.response;
+   
     const answer = response.text();
 
     if (!answer) throw new Error("Empty response from Gemini");
@@ -61,8 +62,9 @@ export const askGemini = async (userId: string, chatId: string | null, context: 
 
     return {
       answer,
+      contentId, // Return content ID for client
       chatId: chat._id, // Return chat ID for client
-      newChat: !chatId // Flag if new chat was created
+    // Flag if new chat was created
     };
 
   } catch (error: any) {
