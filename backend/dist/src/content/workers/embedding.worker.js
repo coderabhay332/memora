@@ -44,7 +44,7 @@ const chunkText = (text, chunkSize = 2000) => {
 const startEmbeddingWorker = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log('🔌 Connecting to RabbitMQ...');
-        const conn = yield amqplib_1.default.connect('amqp://localhost');
+        const conn = yield amqplib_1.default.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
         console.log('✅ Connected to RabbitMQ');
         const channel = yield conn.createChannel();
         yield channel.assertQueue('embedding_jobs', { durable: true });

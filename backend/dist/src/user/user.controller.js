@@ -81,11 +81,16 @@ exports.getAllUser = (0, express_async_handler_1.default)((req, res) => __awaite
 }));
 exports.login = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tokens = (0, passport_jwt_services_1.createUserTokens)(req.user);
-    console.log(req.user);
     const updateUserToken = yield userService.updateUserToken(req.user, tokens.refreshToken);
     res.send((0, response_helper_1.createResponse)(Object.assign(Object.assign({}, tokens), { user: req.user }), "Login successful"));
 }));
 exports.refreshToken = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield userService.refreshToken(req.body.refreshToken);
-    res.send((0, response_helper_1.createResponse)(result, "Token refreshed sucssefully"));
+    try {
+        const result = yield userService.refreshToken(req.user, req.body.refreshToken);
+        res.send((0, response_helper_1.createResponse)(result, "Token refreshed successfully"));
+    }
+    catch (error) {
+        console.error("Refresh token error:", error.message);
+        res.status(401).send((0, response_helper_1.createResponse)(null, "Invalid refresh token"));
+    }
 }));

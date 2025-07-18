@@ -42,12 +42,16 @@ export const getAllUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const tokens = createUserTokens(req.user as IUser)
-  console.log(req.user);
   const updateUserToken = await userService.updateUserToken(req.user as IUser, tokens.refreshToken)
   res.send(createResponse({...tokens, user: req.user}, "Login successful"))
 });
 
 export const refreshToken = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.refreshToken(req.body.refreshToken);
-  res.send(createResponse(result, "Token refreshed sucssefully"));
+  try {
+    const result = await userService.refreshToken(req.user as IUser, req.body.refreshToken);
+    res.send(createResponse(result, "Token refreshed successfully"));
+  } catch (error: any) {
+    console.error("Refresh token error:", error.message);
+    res.status(401).send(createResponse(null, "Invalid refresh token"));
+  }
 });

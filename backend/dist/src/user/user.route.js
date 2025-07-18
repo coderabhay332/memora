@@ -45,6 +45,6 @@ const router = (0, express_1.Router)();
 router.
     post("/create", userValidation.createUser, userController.createUser)
     .post("/login", userValidation.login, passport_1.default.authenticate('login', { session: false }), userController.login)
-    .post("/refresh-token", userValidation.refreshToken, userController.refreshToken)
+    .post("/refresh", userValidation.refreshToken, userController.refreshToken)
     .get("/me", (0, role_auth_middleware_1.roleAuth)(["USER", "admin"]), userController.me);
 exports.default = router;

@@ -109,7 +109,7 @@ export const createUserTokens = (user: IUser) => {
     role: user.role,
   };
 
-  const accessToken = jwt.sign(payload, accessTokenSecret, { expiresIn: '1d' });
+  const accessToken = jwt.sign(payload, accessTokenSecret, { expiresIn: '15m' });
   const refreshToken = jwt.sign(payload, refreshTokenSecret, { expiresIn: '7d' });
 
   return { accessToken, refreshToken };

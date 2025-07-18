@@ -74,7 +74,7 @@ const userSchema = new mongoose_1.Schema({
             type: mongoose_1.default.Schema.Types.ObjectId, ref: "Content", required: true
         }],
     refreshToken: {
-        type: String,
+        type: String
     }
 });
 userSchema.pre("save", function (next) {

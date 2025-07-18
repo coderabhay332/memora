@@ -20,7 +20,7 @@ dotenv_1.default.config();
 const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 const MAX_TOKENS = 4096; // Adjust based on your model's limits
-const askGemini = (userId, chatId, context, query) => __awaiter(void 0, void 0, void 0, function* () {
+const askGemini = (userId, chatId, context, query, contentId) => __awaiter(void 0, void 0, void 0, function* () {
     // Input validation
     if (!(query === null || query === void 0 ? void 0 : query.trim()))
         throw new Error("Query cannot be empty");
@@ -68,8 +68,9 @@ const askGemini = (userId, chatId, context, query) => __awaiter(void 0, void 0, 
         yield chat.save();
         return {
             answer,
+            contentId, // Return content ID for client
             chatId: chat._id, // Return chat ID for client
-            newChat: !chatId // Flag if new chat was created
+            // Flag if new chat was created
         };
     }
     catch (error) {

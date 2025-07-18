@@ -31,8 +31,9 @@ const userSchema = new Schema<IUser>({
       content: [{
               type: mongoose.Schema.Types.ObjectId, ref: "Content", required: true 
             }],
+
             refreshToken: {
-                type: String,
+                type: String
             }
 });
  

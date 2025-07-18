@@ -12,17 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const database_services_1 = require("../../common/services/database.services");
 const pineconeService_1 = require("../../common/services/pinecone/pineconeService");
 const amqplib_1 = __importDefault(require("amqplib"));
 // Initialize database connection
-(0, database_services_1.initDB)();
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 5000;
 const startDeleteWorker = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log('🔌 Connecting to RabbitMQ...');
-        const conn = yield amqplib_1.default.connect('amqp://localhost');
+        const conn = yield amqplib_1.default.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
         console.log('✅ Connected to RabbitMQ');
         const channel = yield conn.createChannel();
         yield channel.assertQueue('delete_jobs', {
