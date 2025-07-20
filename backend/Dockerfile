@@ -1,20 +1,36 @@
-# 1. Use official Node.js image
-FROM node:20.19.2-alpine
+# Use Node.js 20 base image
+FROM node:20
 
-# 2. Set working directory
+# Install system dependencies for native module compilation
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
 WORKDIR /app
 
-# 3. Install pnpm
-RUN npm install -g pnpm
+# Copy dependency files first for better layer caching
+COPY package.json ./
 
-# 4. Copy package files and install dependencies
-COPY package.json package-lock.json ./
-RUN pnpm install
+# Install dependencies using npm
+RUN npm install
 
-# 5. Copy the rest of your code
+# Remove and reinstall sharp specifically for Linux
+RUN npm uninstall sharp
+RUN npm install sharp --platform=linux --arch=x64
+
+# Copy source code (excluding node_modules and dist via .dockerignore)
 COPY . .
 
-# 6. Build the TypeScript code
-RUN npx tsc
-# 7. Default command (can be overridden by docker-compose or Docker run)
+# Build the TypeScript code
+RUN npm run build
+
+# Create a non-root user for security
+
+# Expose your desired port
+EXPOSE 5000
+
+# Run the app
 CMD ["node", "dist/index.js"]

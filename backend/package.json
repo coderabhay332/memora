@@ -4,8 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pnpm tsc",
-    "start": "pnpm tsc && node dist/index.js",
+    "build": "npx tsc",
+    "start": "npx tsc && node dist/index.js",
     "embed": "node ./dist/src/content/workers/embedding.worker.js",
     "delete": "node ./dist/src/content/workers/delete.worker.js"
   },
@@ -58,3 +58,4 @@
     "typescript": "^5.8.3"
   }
 }
+ 
