@@ -4,7 +4,7 @@ import { RootState } from '../store/store';
 import { setTokens, resetTokens } from '../store/reducers/authReducer';
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: 'https://memora-backend-latest-yyf1.onrender.com/api',
+  baseUrl: 'http://localhost:5000/api',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken;
     if (token) {
