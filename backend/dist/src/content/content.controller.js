@@ -91,9 +91,9 @@ const chunkText = (text, chunkSize = 2000) => {
 };
 exports.rag = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
-    const { chatId } = req.params; // Optional chat ID
-    console.log("chatId", chatId);
-    if (!chatId || typeof chatId !== 'string') {
+    const { id } = req.params;
+    console.log("chatId", id);
+    if (!id || typeof id !== 'string') {
         res.status(400).send((0, response_helper_1.createResponse)(null, "Chat ID is required"));
         return;
     }
@@ -106,19 +106,15 @@ exports.rag = (0, express_async_handler_1.default)((req, res) => __awaiter(void 
     const queryEmbeddings = yield (0, embeddings_1.getEmbeddings)(req.body.query, userId);
     const contextResults = yield search(Array.from(queryEmbeddings), userId);
     const results = yield search(Array.from(queryEmbeddings), userId);
+    console.log("results", results);
     const contentIdRaw = (_c = (_b = results.matches[0]) === null || _b === void 0 ? void 0 : _b.metadata) === null || _c === void 0 ? void 0 : _c.contentId;
-    if (!contentIdRaw) {
-        res.status(404).send((0, response_helper_1.createResponse)(null, "Content not found"));
-        return;
-    }
     const contentId = String(contentIdRaw);
     const context = ((_d = results.matches) === null || _d === void 0 ? void 0 : _d.map(r => { var _a; return (_a = r.metadata) === null || _a === void 0 ? void 0 : _a.content; }).join('\n\n')) || '';
-    const answer = yield (0, gemini_service_1.askGemini)(userId, chatId, context, query, contentId);
+    const answer = yield (0, gemini_service_1.askGemini)(userId, id, context, query, contentId);
     res.send((0, response_helper_1.createResponse)({ answer }, "RAG response generated successfully"));
 }));
 exports.createContent = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
-    console.log("userId", userId);
     if (!userId) {
         res.status(400).send((0, response_helper_1.createResponse)(null, "User ID is required"));
         return;

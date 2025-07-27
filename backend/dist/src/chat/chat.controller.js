@@ -45,11 +45,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addMessage = exports.deleteChat = exports.getChat = exports.createChat = void 0;
+exports.getAllChats = exports.addMessage = exports.deleteChat = exports.getChat = exports.createChat = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const chatService = __importStar(require("./chat.service"));
 exports.createChat = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
+    console.log("form create chat", userId);
     const result = yield chatService.createChat(userId);
     res.status(201).json(result);
 }));
@@ -68,4 +69,9 @@ exports.addMessage = (0, express_async_handler_1.default)((req, res) => __awaite
     const { role } = req.body;
     const result = yield chatService.addMessage(req.params.id, role, req.body.message, userId);
     res.status(201).json(result);
+}));
+exports.getAllChats = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const result = yield chatService.getAllChats(userId);
+    res.status(200).json(result);
 }));

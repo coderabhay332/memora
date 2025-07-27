@@ -43,6 +43,7 @@ const chatController = __importStar(require("./chat.controller"));
 router
     .post("/create", (0, role_auth_middleware_1.roleAuth)(["USER"]), chatController.createChat)
     .post("/:id/message", (0, role_auth_middleware_1.roleAuth)(["USER"]), chatController.addMessage)
+    .get("/", (0, role_auth_middleware_1.roleAuth)(["USER"]), chatController.getAllChats)
     .get("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), chatController.getChat)
     .delete("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), chatController.deleteChat);
 exports.default = router;
