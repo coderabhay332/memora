@@ -36,7 +36,7 @@ const askGemini = (userId, chatId, context, query, contentId) => __awaiter(void 
     else {
         chat = yield chat_schema_1.Chat.create({
             userId,
-            title: query.slice(0, 30) // First 30 chars as title
+            title: query.slice(0, 30)
         });
     }
     // Create user message

@@ -60,9 +60,9 @@ const chunkText = (text: string, chunkSize = 2000): string[] => {
 
 
 export const rag = asyncHandler(async (req: Request, res: Response) => {
-  const {chatId} = req.params; // Optional chat ID
-  console.log("chatId", chatId);
-  if (!chatId || typeof chatId !== 'string') {
+  const {id} = req.params; 
+  console.log("chatId", id);
+  if (!id || typeof id !== 'string') {
     res.status(400).send(createResponse(null, "Chat ID is required"));
     return;
   }
@@ -76,15 +76,13 @@ export const rag = asyncHandler(async (req: Request, res: Response) => {
   const queryEmbeddings = await getEmbeddings(req.body.query, userId);
   const contextResults = await search(Array.from(queryEmbeddings), userId);
   const results = await search(Array.from(queryEmbeddings), userId);
+  console.log("results", results);  
   const contentIdRaw = results.matches[0]?.metadata?.contentId;
-  if (!contentIdRaw) {
-    res.status(404).send(createResponse(null, "Content not found"));
-    return;
-  }
+ 
   const contentId = String(contentIdRaw);
   const context = results.matches?.map(r => r.metadata?.content).join('\n\n') || '';
 
-  const answer = await askGemini(userId, chatId, context, query, contentId);
+  const answer = await askGemini(userId, id, context, query, contentId);
 
   res.send(createResponse({ answer }, "RAG response generated successfully"));
 });
@@ -92,7 +90,6 @@ export const rag = asyncHandler(async (req: Request, res: Response) => {
 
 export const createContent = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req.user as IUser)._id;
-  console.log("userId", userId);
   if(!userId){
      res.status(400).send(createResponse(null, "User ID is required"));
     return;

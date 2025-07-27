@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import { Message, Chat } from '../../../chat/chat.schema';
-import { me } from '../../../user/user.service';
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -21,7 +20,7 @@ export const askGemini = async (userId: string, chatId: string | null, context: 
   } else {
     chat = await Chat.create({
       userId,
-      title: query.slice(0, 30) // First 30 chars as title
+      title: query.slice(0, 30) 
     });
   }
 

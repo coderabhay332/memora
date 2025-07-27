@@ -6,7 +6,7 @@ import * as chatController from "./chat.controller"
 router
   .post("/create", roleAuth(["USER"]), chatController.createChat)
   .post("/:id/message", roleAuth(["USER"]), chatController.addMessage)
-
+  .get("/", roleAuth(["USER"]), chatController.getAllChats)
   .get("/:id", roleAuth(["USER"]), chatController.getChat)
   .delete("/:id", roleAuth(["USER"]), chatController.deleteChat);
 

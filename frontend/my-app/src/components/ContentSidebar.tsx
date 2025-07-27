@@ -136,7 +136,7 @@ export default function ContentSidebar({
               </svg>
             </div>
             <span className="flex-1 text-left">All Notes</span>
-            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">24</span>
+            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full"></span>
           </button>
           
           <button className="w-full group flex items-center space-x-4 px-4 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all duration-200 hover:shadow-sm">
