@@ -1,4 +1,5 @@
 import React, { useState, useRef, KeyboardEvent } from 'react';
+import { Send, Paperclip, Smile, Mic, Square, Sparkles } from 'lucide-react';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => Promise<void>;
@@ -7,6 +8,8 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false }) => {
   const [message, setMessage] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,53 +36,189 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
     // Auto-resize textarea
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
     }
   };
 
+  const toggleRecording = () => {
+    setIsRecording(!isRecording);
+    // Add voice recording logic here
+  };
+
+  const quickPrompts = [
+    "Explain this concept",
+    "Help me brainstorm", 
+    "Summarize this",
+    "What do you think?"
+  ];
+
   return (
-    <form onSubmit={handleSubmit} className="flex items-end space-x-3">
-      <div className="flex-1 relative">
-        <textarea
-          ref={textareaRef}
-          value={message}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
-          className="w-full px-4 py-3 pr-12 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-32"
-          rows={1}
-          disabled={isLoading}
-        />
-        
-        {/* Character count indicator */}
-        {message.length > 0 && (
-          <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-            {message.length}
+    <div className="space-y-4">
+      {/* Quick Prompts */}
+      <div className="flex items-center space-x-2 overflow-x-auto pb-2">
+        <span className="text-xs font-medium text-gray-500 whitespace-nowrap flex items-center space-x-1">
+          <Sparkles className="w-3 h-3" />
+          <span>Quick:</span>
+        </span>
+        {quickPrompts.map((prompt, index) => (
+          <button
+            key={index}
+            onClick={() => setMessage(prompt)}
+            className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-full hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 whitespace-nowrap"
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
+
+      {/* Main Input Area */}
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-400">
+          {/* Input Field */}
+          <div className="flex items-end space-x-3 p-4">
+            {/* Attachment Button */}
+            <button
+              type="button"
+              className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200"
+              title="Attach file"
+            >
+              <Paperclip className="w-5 h-5" />
+            </button>
+
+            {/* Text Input */}
+            <div className="flex-1 relative">
+              <textarea
+                ref={textareaRef}
+                value={message}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
+                className="w-full text-sm bg-transparent border-none resize-none focus:outline-none placeholder-gray-400 text-gray-700 max-h-[120px] min-h-[24px] leading-6"
+                rows={1}
+                disabled={isLoading}
+                style={{ height: '24px' }}
+              />
+              
+              {/* Character Counter */}
+              {message.length > 0 && (
+                <div className={`absolute bottom-0 right-0 text-xs transition-colors duration-200 ${
+                  message.length > 1000 ? 'text-red-500' : 'text-gray-400'
+                }`}>
+                  {message.length}/2000
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-2">
+              {/* Emoji Button */}
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200"
+                title="Add emoji"
+              >
+                <Smile className="w-5 h-5" />
+              </button>
+
+              {/* Voice Recording Button */}
+              <button
+                type="button"
+                onClick={toggleRecording}
+                className={`flex-shrink-0 p-2 rounded-xl transition-all duration-200 ${
+                  isRecording
+                    ? 'text-red-500 bg-red-50 hover:bg-red-100'
+                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                }`}
+                title={isRecording ? 'Stop recording' : 'Start voice recording'}
+              >
+                {isRecording ? (
+                  <Square className="w-5 h-5 animate-pulse" />
+                ) : (
+                  <Mic className="w-5 h-5" />
+                )}
+              </button>
+
+              {/* Send Button */}
+              <button
+                type="submit"
+                disabled={!message.trim() || isLoading}
+                className={`flex-shrink-0 p-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center min-w-[48px] ${
+                  message.trim() && !isLoading
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 shadow-lg hover:shadow-xl'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                }`}
+                title="Send message"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Loading Indicator */}
+          {isLoading && (
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100 rounded-b-2xl overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 animate-pulse"></div>
+            </div>
+          )}
+        </div>
+
+        {/* Voice Recording Indicator */}
+        {isRecording && (
+          <div className="absolute -top-12 left-4 right-4 bg-red-50 border border-red-200 rounded-xl p-3 flex items-center space-x-3 animate-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-red-700">Recording...</span>
+            </div>
+            <div className="flex-1 flex justify-center">
+              <div className="flex space-x-1">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-1 bg-red-400 rounded-full animate-pulse"
+                    style={{
+                      height: `${Math.random() * 20 + 10}px`,
+                      animationDelay: `${i * 0.1}s`
+                    }}
+                  ></div>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={toggleRecording}
+              className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors duration-200"
+            >
+              Stop
+            </button>
           </div>
         )}
-      </div>
-      
-      <button
-        type="submit"
-        disabled={!message.trim() || isLoading}
-        className={`p-3 rounded-xl transition-all duration-200 ${
-          message.trim() && !isLoading
-            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 shadow-lg'
-            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-        }`}
-      >
-        {isLoading ? (
-          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        ) : (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
+
+        {/* Emoji Picker Placeholder */}
+        {showEmojiPicker && (
+          <div className="absolute bottom-full mb-2 left-0 bg-white border border-gray-200 rounded-2xl shadow-lg p-4 w-80 max-h-60 overflow-y-auto">
+            <div className="text-sm text-gray-500 text-center py-8">
+              Emoji picker would go here
+            </div>
+          </div>
         )}
-      </button>
-    </form>
+      </form>
+
+      {/* Input Hints */}
+      <div className="flex items-center justify-between text-xs text-gray-400">
+        <div className="flex items-center space-x-4">
+          <span>Press Enter to send</span>
+          <span>Shift + Enter for new line</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <span>AI Ready</span>
+        </div>
+      </div>
+    </div>
   );
 };
 
