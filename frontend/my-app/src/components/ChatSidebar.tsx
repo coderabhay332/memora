@@ -3,7 +3,7 @@ import { IChat } from '../types/chat';
 
 interface ChatSidebarProps {
   chats: IChat[];
-  activeChat: IChat | null;
+  activeChat: IChat | null;  // Expects the whole chat object, not just ID
   onChatSelect: (chat: IChat) => void;
   onNewChat: () => void;
   onDeleteChat: (chatId: string) => void;
