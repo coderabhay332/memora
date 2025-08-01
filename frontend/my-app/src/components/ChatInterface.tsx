@@ -1,9 +1,8 @@
-// Corrected version of ChatInterface.tsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import MessageBubble from './MessageBubble';
 import ChatInput from './ChatInput';
 import { IMessage, IChat } from '../types/chat';
+import { ArrowDown, ArrowUp, Sparkles, Bot, User, RefreshCw } from 'lucide-react';
 
 interface ChatInterfaceProps {
   chat: IChat | null;
@@ -21,6 +20,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
   const [isNearBottom, setIsNearBottom] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
   const prevMessagesLength = useRef(0);
 
   useEffect(() => {
@@ -30,14 +30,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         width: 8px;
       }
       .messages-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: rgba(0,0,0,0.05);
+        border-radius: 4px;
       }
       .messages-container::-webkit-scrollbar-thumb {
-        background: #888;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 4px;
       }
       .messages-container::-webkit-scrollbar-thumb:hover {
-        background: #555;
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
       }
     `;
     document.head.appendChild(style);
@@ -113,83 +114,158 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   if (!chat) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="relative mb-8">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-purple-500/30 animate-bounce">
+              <Bot className="w-12 h-12 text-white" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-3xl"></div>
+            </div>
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2">
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+                <div className="w-2 h-2 bg-pink-400 rounded-full animate-ping" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '0.4s' }}></div>
+              </div>
+            </div>
           </div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Start a New Conversation</h3>
-          <p className="text-gray-600">Select a chat from the sidebar or create a new one to begin.</p>
+          
+          <h3 className="text-2xl font-bold text-gray-800 mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Start a New Conversation
+          </h3>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            Select a chat from the sidebar or create a new one to begin your AI-powered conversation.
+          </p>
+          
+          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
+            <div className="flex items-center space-x-2">
+              <Sparkles className="w-4 h-4 text-purple-500" />
+              <span>AI-Powered</span>
+            </div>
+            <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+            <div className="flex items-center space-x-2">
+              <RefreshCw className="w-4 h-4 text-blue-500" />
+              <span>Real-time</span>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
-      {/* Chat Header */}
-      <div className="border-b border-gray-200 p-4">
-        {/* Header content... */}
+    <div className="flex-1 flex flex-col bg-gradient-to-br from-white via-blue-50/20 to-purple-50/20">
+      {/* Enhanced Chat Header */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-white/60 shadow-sm">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Bot className="w-6 h-6 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-800">
+                  {chat.title || 'AI Assistant'}
+                </h2>
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span>Online</span>
+                  <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                  <span>{chat.messages?.length || 0} messages</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200">
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Messages Container -- MODIFICATION HERE */}
+      {/* Enhanced Messages Container */}
       <div 
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-4 relative messages-container"
+        className="flex-1 overflow-y-auto p-6 relative messages-container"
         onScroll={handleScroll}
-        // The inline style has been REMOVED
       >
-        <div className="space-y-4">
-        {chat.messages && chat.messages.length > 0 ? (
-          chat.messages.map((message, index) => (
-            <MessageBubble 
-              key={message._id || index} 
-              message={message} 
-            />
-          ))
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            {/* Empty chat placeholder... */}
+        <div className="max-w-4xl mx-auto">
+          <div className="space-y-6">
+            {chat.messages && chat.messages.length > 0 ? (
+              chat.messages.map((message, index) => (
+                <MessageBubble 
+                  key={message._id || index} 
+                  message={message} 
+                />
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-full py-20">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Ready to chat!</h3>
+                  <p className="text-gray-500 text-sm">Send a message to start the conversation.</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="flex max-w-xs lg:max-w-md items-end space-x-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                    <Bot className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="bg-gray-100 px-4 py-3 rounded-2xl shadow-sm">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
         </div>
         <div ref={messagesEndRef} />
         
-        {/* Scroll to Top Button */}
+        {/* Enhanced Scroll Buttons */}
         {showScrollToTopButton && (
           <button
             onClick={scrollToTop}
-            className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-all duration-200 transform hover:scale-110 z-10"
+            className="fixed top-24 right-8 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-600 hover:text-gray-800 p-3 rounded-2xl shadow-lg border border-white/60 transition-all duration-200 transform hover:scale-110 z-10 group"
             aria-label="Scroll to top"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v17" />
-            </svg>
+            <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform duration-200" />
           </button>
         )}
 
-        {/* Scroll to Bottom Button */}
         {showScrollButton && (
           <button
             onClick={scrollToBottom}
-            className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-all duration-200 transform hover:scale-110 z-10"
+            className="fixed bottom-32 right-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white p-3 rounded-2xl shadow-lg transition-all duration-200 transform hover:scale-110 z-10 group"
             aria-label="Scroll to bottom"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
+            <ArrowDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform duration-200" />
           </button>
         )}
       </div>
 
-      {/* Chat Input */}
-      <div className="border-t border-gray-200 p-4">
-        <ChatInput 
-          onSendMessage={onSendMessage} 
-          isLoading={isLoading}
-        />
+      {/* Enhanced Chat Input */}
+      <div className="bg-white/80 backdrop-blur-xl border-t border-white/60 p-6">
+        <div className="max-w-4xl mx-auto">
+          <ChatInput 
+            onSendMessage={onSendMessage} 
+            isLoading={isLoading}
+          />
+        </div>
       </div>
     </div>
   );
