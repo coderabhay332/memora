@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import MessageBubble from './MessageBubble';
 import ChatInput from './ChatInput';
@@ -8,12 +10,14 @@ interface ChatInterfaceProps {
   chat: IChat | null;
   onSendMessage: (message: string) => Promise<void>;
   isLoading?: boolean;
+  hasActiveChat: boolean;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ 
   chat, 
   onSendMessage, 
-  isLoading = false 
+  isLoading = false,
+  hasActiveChat 
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -112,7 +116,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     };
   }, [chat?._id]);
 
-  if (!chat) {
+  if (!hasActiveChat) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
         <div className="text-center max-w-md mx-auto p-8">
@@ -154,89 +158,108 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gradient-to-br from-white via-blue-50/20 to-purple-50/20">
+    <div className="flex-1 flex flex-col bg-gradient-to-br from-white via-blue-50/20 to-purple-50/20 h-full">
       {/* Enhanced Chat Header */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-white/60 shadow-sm">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                  <Bot className="w-6 h-6 text-white" />
+      {chat && (
+        <div className="bg-white/80 backdrop-blur-xl border-b border-white/60 shadow-sm">
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Bot className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-gray-800">
-                  {chat.title || 'AI Assistant'}
-                </h2>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span>Online</span>
-                  <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                  <span>{chat.messages?.length || 0} messages</span>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-800">
+                    {chat.title || 'AI Assistant'}
+                  </h2>
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span>Online</span>
+                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                    <span>{chat.messages?.length || 0} messages</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200">
-                <RefreshCw className="w-4 h-4" />
-              </button>
+              
+              <div className="flex items-center space-x-2">
+                <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200">
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Enhanced Messages Container */}
+      {/* Messages Container with flex-shrink-0 to prevent squishing */}
       <div 
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-6 relative messages-container"
+        className={`flex-1 overflow-y-auto p-6 relative messages-container ${!chat ? 'flex items-center justify-center' : ''}`}
         onScroll={handleScroll}
       >
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-6">
-            {chat.messages && chat.messages.length > 0 ? (
-              chat.messages.map((message, index) => (
-                <MessageBubble 
-                  key={message._id || index} 
-                  message={message} 
-                />
-              ))
-            ) : (
-              <div className="flex items-center justify-center h-full py-20">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8 text-gray-400" />
+        <div className="max-w-4xl w-full mx-auto">
+          {chat ? (
+            <div className="space-y-6">
+              {chat.messages && chat.messages.length > 0 ? (
+                chat.messages.map((message, index) => (
+                  <MessageBubble 
+                    key={message._id || index} 
+                    message={message} 
+                  />
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-full py-20">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Sparkles className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Ready to chat!</h3>
+                    <p className="text-gray-500 text-sm">Send a message to start the conversation.</p>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Ready to chat!</h3>
-                  <p className="text-gray-500 text-sm">Send a message to start the conversation.</p>
                 </div>
-              </div>
-            )}
-            
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="flex max-w-xs lg:max-w-md items-end space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="bg-gray-100 px-4 py-3 rounded-2xl shadow-sm">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+              )}
+              
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="flex max-w-xs lg:max-w-md items-end space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                      <Bot className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="bg-gray-100 px-4 py-3 rounded-2xl shadow-sm">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                      </div>
                     </div>
                   </div>
                 </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <Bot className="w-12 h-12 text-blue-400" />
               </div>
-            )}
-          </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3">Start a New Conversation</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Select a chat from the sidebar or create a new one to begin your conversation.
+              </p>
+              <button
+                onClick={() => {}}
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
+              >
+                New Chat
+              </button>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
-        <div ref={messagesEndRef} />
-        
-        {/* Enhanced Scroll Buttons */}
+
+        {/* Scroll Buttons */}
         {showScrollToTopButton && (
           <button
             onClick={scrollToTop}
@@ -258,15 +281,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
       </div>
 
-      {/* Enhanced Chat Input */}
-      <div className="bg-white/80 backdrop-blur-xl border-t border-white/60 p-6">
-        <div className="max-w-4xl mx-auto">
-          <ChatInput 
-            onSendMessage={onSendMessage} 
-            isLoading={isLoading}
-          />
+      {/* Chat Input - Always show when there's an active chat */}
+      {hasActiveChat && (
+        <div className="bg-white/80 backdrop-blur-xl border-t border-white/60 p-6">
+          <div className="max-w-4xl mx-auto">
+            <ChatInput 
+              onSendMessage={onSendMessage} 
+              isLoading={isLoading}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
