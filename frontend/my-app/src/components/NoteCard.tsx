@@ -12,6 +12,7 @@ interface NoteCardProps {
   onSave: (id: string, content: string) => void;
   onCancel: () => void;
   onEditContentChange: (content: string) => void;
+  onView: (item: ContentItem) => void;
   viewMode?: 'grid' | 'list';
 }
 
@@ -25,6 +26,7 @@ export default function NoteCard({
   onSave,
   onCancel,
   onEditContentChange,
+  onView,
   viewMode = 'grid',
 }: NoteCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -55,11 +57,16 @@ export default function NoteCard({
   if (viewMode === 'list') {
     return (
       <div
-        className={`group bg-white/80 backdrop-blur-sm border border-white/60 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:border-blue-200/60 hover:-translate-y-1 ${
-          isHovered ? 'shadow-lg shadow-blue-500/10 border-blue-200/60' : ''
+        className={`group bg-white/80 backdrop-blur-sm border border-white/60 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/10 hover:border-gray-300 hover:-translate-y-1 ${
+          isHovered ? 'shadow-lg shadow-gray-500/10 border-gray-300' : ''
         }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={() => {
+          if (!isEditing) {
+            onView(item);
+          }
+        }}
       >
         <div className="p-6">
           <div className="flex items-start justify-between">
@@ -69,7 +76,7 @@ export default function NoteCard({
                   <textarea
                     value={editContent}
                     onChange={(e) => onEditContentChange(e.target.value)}
-                    className="w-full min-h-[100px] p-4 border-2 border-blue-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm leading-relaxed transition-all duration-200"
+                    className="w-full min-h-[100px] p-4 border-2 border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-black text-sm leading-relaxed transition-all duration-200"
                     placeholder="Edit your note..."
                     autoFocus
                   />
@@ -113,13 +120,19 @@ export default function NoteCard({
             {!isEditing && (
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => onEdit(item._id, item.content)}
-                  className="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onEdit(item._id, item.content);
+                  }}
+                  className="p-2 text-black hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
                 >
                   <Edit3 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => onDelete(item._id)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onDelete(item._id);
+                  }}
                   className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -134,20 +147,25 @@ export default function NoteCard({
 
   return (
     <div
-      className={`group relative bg-white/80 backdrop-blur-sm border border-white/60 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20 hover:border-blue-200/60 hover:-translate-y-2 hover:rotate-1 ${
-        isHovered ? 'shadow-xl shadow-blue-500/20 border-blue-200/60 -translate-y-2' : 'shadow-sm'
+      className={`group relative bg-white/80 backdrop-blur-sm border border-white/60 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gray-500/20 hover:border-gray-300 hover:-translate-y-2 hover:rotate-1 ${
+        isHovered ? 'shadow-xl shadow-gray-500/20 border-gray-300 -translate-y-2' : 'shadow-sm'
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => {
+        if (!isEditing) {
+          onView(item);
+        }
+      }}
     >
       {/* Gradient accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gray-700 via-gray-800 to-black"></div>
       
       <div className="p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl">
+            <div className="p-2 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl">
               <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -160,7 +178,10 @@ export default function NoteCard({
           {!isEditing && (
             <div className="relative">
               <button
-                onClick={() => setShowDropdown(!showDropdown)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setShowDropdown(!showDropdown);
+                }}
                 className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -169,7 +190,8 @@ export default function NoteCard({
               {showDropdown && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-10">
                   <button
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       onEdit(item._id, item.content);
                       setShowDropdown(false);
                     }}
@@ -179,7 +201,8 @@ export default function NoteCard({
                     <span>Edit note</span>
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       onDelete(item._id);
                       setShowDropdown(false);
                     }}
@@ -201,7 +224,7 @@ export default function NoteCard({
               <textarea
                 value={editContent}
                 onChange={(e) => onEditContentChange(e.target.value)}
-                className="w-full min-h-[120px] p-4 border-2 border-blue-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm leading-relaxed transition-all duration-200"
+                className="w-full min-h-[120px] p-4 border-2 border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-black text-sm leading-relaxed transition-all duration-200"
                 placeholder="Edit your note..."
                 autoFocus
               />
@@ -253,14 +276,20 @@ export default function NoteCard({
             
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => onEdit(item._id, item.content)}
-                className="p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onEdit(item._id, item.content);
+                }}
+                className="p-1.5 text-black hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
                 title="Edit note"
               >
                 <Edit3 className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => onDelete(item._id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDelete(item._id);
+                }}
                 className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
                 title="Delete note"
               >
@@ -272,7 +301,7 @@ export default function NoteCard({
       </div>
       
       {/* Hover glow effect */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-pink-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-gray-700/5 via-gray-800/5 to-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
     </div>
   );
 }

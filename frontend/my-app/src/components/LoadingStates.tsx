@@ -7,20 +7,20 @@ interface LoadingStatesProps {
 
 export function LoadingSpinner() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <div className="flex flex-col items-center space-y-6 max-w-sm mx-auto text-center">
         {/* Enhanced Loading Animation */}
         <div className="relative">
-          <div className="w-20 h-20 border-4 border-blue-200 rounded-full animate-spin">
-            <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+          <div className="w-20 h-20 border-4 border-gray-300 rounded-full animate-spin">
+            <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-black rounded-full animate-spin"></div>
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <Sparkles className="w-8 h-8 text-blue-500 animate-pulse" />
+            <Sparkles className="w-8 h-8 text-black animate-pulse" />
           </div>
         </div>
         
         <div className="space-y-3">
-          <h3 className="text-xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h3 className="text-xl font-bold text-gray-800 bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent">
             Loading your workspace
           </h3>
           <p className="text-gray-600 leading-relaxed">
@@ -31,15 +31,15 @@ export function LoadingSpinner() {
         {/* Loading Steps */}
         <div className="w-full max-w-xs space-y-2">
           <div className="flex items-center space-x-3 text-sm text-gray-500">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
             <span>Initializing workspace</span>
           </div>
           <div className="flex items-center space-x-3 text-sm text-gray-500">
-            <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
             <span>Loading your notes</span>
           </div>
           <div className="flex items-center space-x-3 text-sm text-gray-500">
-            <div className="w-2 h-2 bg-blue-200 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+            <div className="w-2 h-2 bg-gray-300 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
             <span>Setting up AI features</span>
           </div>
         </div>
@@ -94,11 +94,11 @@ export function ErrorState() {
 
 export function EmptyContentState({ onCreateNote }: LoadingStatesProps) {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <div className="text-center p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/60 max-w-lg mx-auto">
         {/* Welcome Illustration */}
         <div className="relative mb-8">
-          <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-purple-500/30">
+          <div className="w-24 h-24 bg-gradient-to-br from-gray-700 to-black rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-gray-500/30">
             <FileText className="w-12 h-12 text-white" />
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-3xl"></div>
           </div>
@@ -109,7 +109,7 @@ export function EmptyContentState({ onCreateNote }: LoadingStatesProps) {
         
         <div className="space-y-6">
           <div>
-            <h3 className="text-3xl font-bold text-gray-800 mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h3 className="text-3xl font-bold text-gray-800 mb-3 bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent">
               Welcome to Memora!
             </h3>
             <p className="text-gray-600 leading-relaxed text-lg">
@@ -119,15 +119,15 @@ export function EmptyContentState({ onCreateNote }: LoadingStatesProps) {
           
           {/* Feature Highlights */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-              <FileText className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-              <h4 className="font-semibold text-blue-800 text-sm">Smart Notes</h4>
-              <p className="text-blue-600 text-xs mt-1">Organize thoughts effortlessly</p>
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200">
+              <FileText className="w-6 h-6 text-black mx-auto mb-2" />
+              <h4 className="font-semibold text-gray-900 text-sm">Smart Notes</h4>
+              <p className="text-gray-700 text-xs mt-1">Organize thoughts effortlessly</p>
             </div>
-            <div className="p-4 bg-purple-50 rounded-2xl border border-purple-100">
-              <Sparkles className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-              <h4 className="font-semibold text-purple-800 text-sm">AI Powered</h4>
-              <p className="text-purple-600 text-xs mt-1">Get intelligent assistance</p>
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200">
+              <Sparkles className="w-6 h-6 text-black mx-auto mb-2" />
+              <h4 className="font-semibold text-gray-900 text-sm">AI Powered</h4>
+              <p className="text-gray-700 text-xs mt-1">Get intelligent assistance</p>
             </div>
             <div className="p-4 bg-green-50 rounded-2xl border border-green-100">
               <Search className="w-6 h-6 text-green-500 mx-auto mb-2" />
@@ -137,7 +137,7 @@ export function EmptyContentState({ onCreateNote }: LoadingStatesProps) {
           </div>
           
           <button 
-            className="w-full px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl font-bold hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center space-x-3 text-lg"
+            className="w-full px-8 py-4 bg-gradient-to-r from-black to-gray-800 text-white rounded-2xl font-bold hover:from-gray-900 hover:to-black transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center space-x-3 text-lg"
             onClick={onCreateNote}
           >
             <Plus className="w-6 h-6" />
@@ -193,7 +193,7 @@ export function EmptySearchState({ onCreateNote }: LoadingStatesProps) {
               Clear Search
             </button>
             <button 
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-black to-gray-800 text-white rounded-xl font-medium hover:from-gray-900 hover:to-black transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
               onClick={onCreateNote}
             >
               <Plus className="w-4 h-4" />

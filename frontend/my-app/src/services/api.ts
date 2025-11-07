@@ -3,9 +3,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { ApiResponse, User, ContentItem } from "../types";
 import {
   IChat,
-  CreateChatResponse,
   GetChatResponse,
-  AddMessageRequest,
   AddMessageResponse,
   DeleteChatResponse,
 } from "../types/chat"; // Assuming your chat types are in this path
@@ -102,7 +100,7 @@ export const api = createApi({
       invalidatesTags: ["Content"],
     }),
     getContentById: builder.query<
-      ApiResponse<{ content: ContentItem }>,
+      ApiResponse<ContentItem>,
       string
     >({
       query: (id) => `/content/${id}`,
@@ -126,7 +124,27 @@ export const api = createApi({
       }),
     }),
     rag: builder.mutation<
-      ApiResponse<{ response: string }>,
+      ApiResponse<{ 
+        answer: string;
+        contentId: string;
+        chatId: string;
+        sourceInfo: {
+          contentId: string;
+          title: string;
+          sourceUrl: string;
+          sourceType: string;
+          metadata: Record<string, any>;
+          preview: string;
+        } | null;
+        attribution: string | null;
+        contextStats: {
+          originalLength: number;
+          optimizedLength: number;
+          relevantChunks: number;
+          queryIntent: string;
+          queryComplexity: string;
+        };
+      }>,
       { id: string; query: string }
     >({
       query: ({ id, query }) => ({
@@ -188,6 +206,27 @@ export const api = createApi({
       }),
       invalidatesTags: ["Chat"],
     }),
+
+    // Source information endpoint
+    getRAGSource: builder.query<
+      ApiResponse<{
+        sourceInfo: {
+          contentId: string;
+          title: string;
+          sourceUrl: string;
+          sourceType: string;
+          metadata: Record<string, any>;
+        };
+        fullContent: any;
+        navigationUrl: string;
+        canEdit: boolean;
+        canDelete: boolean;
+      }>,
+      string
+    >({
+      query: (contentId) => `/content/source/${contentId}`,
+      providesTags: (result, error, contentId) => [{ type: "Content", id: contentId }],
+    }),
   }),
 });
 
@@ -210,4 +249,6 @@ export const {
   useGetAllChatsQuery,
   useAddMessageMutation,
   useDeleteChatMutation,
+  // Source information hook
+  useGetRAGSourceQuery,
 } = api;

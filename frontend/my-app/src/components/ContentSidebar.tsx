@@ -20,11 +20,11 @@ export default function ContentSidebar({
   onCreateNote,
 }: ContentSidebarProps) {
   return (
-    <div className="w-72 bg-gradient-to-b from-slate-50 to-white border-r border-slate-200/60 flex flex-col shadow-sm">
+    <div className="w-72 bg-gradient-to-b from-gray-50 to-white border-r border-slate-200/60 flex flex-col shadow-sm">
       {/* Header with enhanced logo */}
       <div className="p-6 border-b border-slate-200/60">
         <div className="flex items-center space-x-3">
-          <div className="relative w-10 h-10 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200">
+          <div className="relative w-10 h-10 bg-gradient-to-br from-gray-800 to-black rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200">
             <span className="text-white text-lg font-bold">M</span>
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl"></div>
           </div>
@@ -39,14 +39,14 @@ export default function ContentSidebar({
       <div className="p-6 border-b border-slate-200/60">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200">
-            <svg className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-slate-400 group-focus-within:text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
           <input
             type="text"
             placeholder="Search your notes..."
-            className="w-full pl-12 pr-4 py-3 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all duration-200 shadow-sm hover:shadow-md placeholder-slate-400"
+            className="w-full pl-12 pr-4 py-3 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-black transition-all duration-200 shadow-sm hover:shadow-md placeholder-slate-400"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
           />
@@ -101,12 +101,12 @@ export default function ContentSidebar({
       {/* Enhanced quick actions */}
       <div className="p-6 space-y-3">
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
-          <span className="w-2 h-2 bg-indigo-400 rounded-full mr-2"></span>
+            <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
           Quick Actions
         </h3>
         <button 
           onClick={onCreateNote}
-          className="w-full group flex items-center space-x-3 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full group flex items-center space-x-3 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-black to-gray-800 hover:from-gray-900 hover:to-black rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
         >
           <div className="p-1 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -125,13 +125,13 @@ export default function ContentSidebar({
       {/* Enhanced library section */}
       <div className="px-6 pb-6 flex-1">
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
-          <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+          <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
           Library
         </h3>
         <div className="space-y-2">
           <button className="w-full group flex items-center space-x-4 px-4 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all duration-200 hover:shadow-sm">
-            <div className="p-2 bg-blue-50 group-hover:bg-blue-100 rounded-lg transition-colors duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="p-2 bg-gray-50 group-hover:bg-gray-100 rounded-lg transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
@@ -140,8 +140,8 @@ export default function ContentSidebar({
           </button>
           
           <button className="w-full group flex items-center space-x-4 px-4 py-3 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all duration-200 hover:shadow-sm">
-            <div className="p-2 bg-purple-50 group-hover:bg-purple-100 rounded-lg transition-colors duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="p-2 bg-gray-50 group-hover:bg-gray-100 rounded-lg transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>

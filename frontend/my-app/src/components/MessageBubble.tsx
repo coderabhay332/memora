@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { IMessage } from '../types/chat';
-import { Copy, Check, Bot, User, Sparkles, Clock } from 'lucide-react';
+import { Copy, Check, Bot, User, Sparkles, Clock, FileText, ExternalLink } from 'lucide-react';
+import SourceLink from './SourceLink';
 
 interface MessageBubbleProps {
   message: IMessage;
+  onNavigateToSource?: (contentId: string) => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onNavigateToSource }) => {
   const [copied, setCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const isUser = message.role === 'user';
@@ -40,7 +42,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         {/* Enhanced Avatar */}
         <div className={`flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:scale-110 ${
           isUser 
-            ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 hover:from-blue-600 hover:to-purple-700' 
+            ? 'bg-gradient-to-br from-black to-gray-800 hover:from-gray-900 hover:to-black' 
             : 'bg-gradient-to-br from-emerald-400 via-teal-500 to-blue-500 hover:from-emerald-500 hover:to-blue-600'
         }`}>
           {isUser ? (
@@ -56,8 +58,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           {/* Message Bubble */}
           <div className={`relative px-6 py-4 rounded-3xl shadow-lg transition-all duration-300 group-hover:shadow-xl ${
             isUser 
-              ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white ml-4' 
-              : 'bg-white border border-gray-100 text-gray-800 mr-4 hover:border-gray-200'
+              ? 'bg-gradient-to-br from-black to-gray-800 text-white ml-4' 
+              : 'bg-white border border-gray-200 text-gray-800 mr-4 hover:border-gray-300'
           }`}>
             {/* AI Sparkle Effect */}
             {!isUser && (
@@ -75,6 +77,46 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             }`}>
               {message.message}
             </p>
+
+            {/* Fallback clickable Content ID if sourceInfo is missing */}
+            {!isUser && !message.sourceInfo && message.contentId && (
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <button
+                  onClick={() => onNavigateToSource && onNavigateToSource(message.contentId as string)}
+                  className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100"
+                  title={message.contentId as string}
+                >
+                  ID: {String(message.contentId)}
+                </button>
+              </div>
+            )}
+            
+            {/* Source Information for AI messages */}
+            {!isUser && message.sourceInfo && (
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <SourceLink 
+                  sourceInfo={message.sourceInfo}
+                  onNavigate={onNavigateToSource}
+                  showPreview={true}
+                  showContentIdLink={true}
+                  compact={false}
+                />
+              </div>
+            )}
+            
+            {/* Context Stats for AI messages */}
+            {!isUser && message.contextStats && (
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                <span className="flex items-center space-x-1">
+                  <FileText className="w-3 h-3" />
+                  <span>{message.contextStats.relevantChunks} sources</span>
+                </span>
+                <span className="text-gray-400">•</span>
+                <span>{message.contextStats.queryIntent}</span>
+                <span className="text-gray-400">•</span>
+                <span className="capitalize">{message.contextStats.queryComplexity}</span>
+              </div>
+            )}
             
             {/* Message Actions */}
             <div className={`absolute top-2 ${isUser ? 'left-2' : 'right-2'} opacity-0 group-hover:opacity-100 transition-opacity duration-200`}>
