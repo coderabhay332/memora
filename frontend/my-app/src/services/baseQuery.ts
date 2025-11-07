@@ -3,7 +3,7 @@ import { fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@re
 import { RootState } from '../store/store';
 import { setTokens, resetTokens } from '../store/reducers/authReducer';
 
-const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://3.84.244.161:5000/api').replace(/\/$/, '');
+const API_BASE_URL = (process.env.REACT_APP_API_URL || 'https://api.memora.sbs/api').replace(/\/$/, '');
 console.log('[API] Base URL =', API_BASE_URL);
 
 const rawBaseQuery = fetchBaseQuery({
