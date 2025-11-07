@@ -12,5 +12,9 @@ export interface IMessage extends BaseSchema {
     senderId: string;
     role: "user" | "assistant";
     message: string;
+    contentId?: string | null;
+    sourceInfo?: Record<string, any> | null;
+    attribution?: string | null;
+    contextStats?: Record<string, any> | null;
 }
 

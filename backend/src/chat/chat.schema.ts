@@ -4,6 +4,10 @@ import mongoose from "mongoose";
 const messageSchema = new mongoose.Schema({
   role: { type: String, enum: ["user", "assistant"], required: true },
   message: { type: String, required: true },
+  contentId: { type: String, default: null },
+  sourceInfo: { type: mongoose.Schema.Types.Mixed, default: null },
+  attribution: { type: String, default: null },
+  contextStats: { type: mongoose.Schema.Types.Mixed, default: null },
 }, { timestamps: true });
 
 export const Message = mongoose.model("Message", messageSchema);

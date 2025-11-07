@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend Node.js application
   memora-backend:
@@ -7,72 +5,49 @@ services:
     container_name: memora-backend
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
       - PORT=5000
-      - MONGODB_URI=mongodb://mongodb:27017/memora
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-    depends_on:
-      - mongodb
-      - rabbitmq
-    volumes:
-      - ./.env:/app/.env:ro
-    networks:
-      - memora-network
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 10G
+        reservations:
+          memory: 4G
 
-  # MongoDB database
-  mongodb:
-    image: mongo:7
-    container_name: memora-mongodb
-    ports:
-      - "27017:27017"
+  # Embedding worker
+  memora-embed:
+    build: .
+    container_name: memora-embed
+    command: npm run embed
+    env_file:
+      - .env
     environment:
-      - MONGO_INITDB_DATABASE=memora
-    volumes:
-      - mongodb_data:/data/db
-      - ./mongo-init:/docker-entrypoint-initdb.d:ro
-    networks:
-      - memora-network
+      - NODE_ENV=production
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 3G
 
-  # RabbitMQ message broker
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: memora-rabbitmq
-    ports:
-      - "5672:5672"    # AMQP port
-      - "15672:15672"  # Management UI port
+  # Delete worker
+  memora-delete:
+    build: .
+    container_name: memora-delete
+    command: npm run delete
+    env_file:
+      - .env
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=admin123
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - memora-network
+      - NODE_ENV=production
     restart: unless-stopped
-
-  # Redis (optional - for caching if needed)
-  redis:
-    image: redis:7-alpine
-    container_name: memora-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - memora-network
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-
-volumes:
-  mongodb_data:
-    driver: local
-  rabbitmq_data:
-    driver: local
-  redis_data:
-    driver: local
-
-networks:
-  memora-network:
-    driver: bridge
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 1G

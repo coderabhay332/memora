@@ -30,7 +30,7 @@ const port = (_a = Number(process.env.PORT)) !== null && _a !== void 0 ? _a : 50
 const app = (0, express_1.default)();
 app.use(express_1.default.json()); // Parses JSON bodies
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:3000', // specify exact origin
+    origin: ['http://localhost:3000', 'https://memora-gray.vercel.app'],
     credentials: true // allow credentials
 }));
 app.use((0, helmet_1.default)());
@@ -39,20 +39,63 @@ app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
 const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
-    // init mongodb
-    (0, rabbitmq_service_1.connectRabbitMQ)();
-    yield (0, database_services_1.initDB)();
-    // passport init
-    (0, passport_jwt_services_1.initPassport)();
-    // set base path to /api
-    app.use("/api", routes_1.default);
-    app.get("/", (req, res) => {
-        res.send({ status: "ok" });
-    });
-    // error handler
-    app.use(error_handler_1.default);
-    http_1.default.createServer(app).listen(port, () => {
-        console.log("Server is runnuing on port", port);
-    });
+    try {
+        // Initialize RabbitMQ with error handling
+        try {
+            yield (0, rabbitmq_service_1.connectRabbitMQ)();
+        }
+        catch (e) {
+            console.error('⚠️ RabbitMQ initialization failed, continuing without it:', (e === null || e === void 0 ? void 0 : e.message) || e);
+        }
+        // Initialize MongoDB
+        yield (0, database_services_1.initDB)();
+        // Initialize Passport
+        (0, passport_jwt_services_1.initPassport)();
+        // Set base path to /api
+        app.use("/api", routes_1.default);
+        app.get("/", (req, res) => {
+            res.send({ status: "ok" });
+        });
+        // Health check endpoint
+        app.get("/health", (req, res) => {
+            res.json({
+                status: "ok",
+                timestamp: new Date().toISOString(),
+                services: {
+                    database: "connected",
+                    rabbitmq: "connected" // This will be updated based on actual connection status
+                }
+            });
+        });
+        // Error handler
+        app.use(error_handler_1.default);
+        const server = http_1.default.createServer(app);
+        server.listen(port, () => {
+            console.log("Server is running on port", port);
+        });
+        // Graceful shutdown handling
+        const gracefulShutdown = (signal) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log(`\n🔄 Received ${signal}. Starting graceful shutdown...`);
+            server.close(() => __awaiter(void 0, void 0, void 0, function* () {
+                console.log('📡 HTTP server closed');
+                try {
+                    yield (0, rabbitmq_service_1.disconnectRabbitMQ)();
+                    console.log('🐰 RabbitMQ disconnected');
+                }
+                catch (error) {
+                    console.error('❌ Error disconnecting RabbitMQ:', error);
+                }
+                console.log('✅ Graceful shutdown completed');
+                process.exit(0);
+            }));
+        });
+        // Handle shutdown signals
+        process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+        process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    }
+    catch (error) {
+        console.error('❌ Failed to initialize application:', error);
+        process.exit(1);
+    }
 });
 void initApp();

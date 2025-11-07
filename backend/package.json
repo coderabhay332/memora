@@ -5,9 +5,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "start": "npx tsc && node dist/index.js",
-    "embed": "node ./dist/src/content/workers/embedding.worker.js",
-    "delete": "node ./dist/src/content/workers/delete.worker.js"
+    "start": "tsc -b && node --max-old-space-size=7680 dist/index.js",
+    "embed": "node --max-old-space-size=6144 dist/src/content/workers/embedding.worker.js",
+    "delete": "node --max-old-space-size=2048 dist/src/content/workers/delete.worker.js",
+    "start:all": "concurrently \"npm run start\" \"npm run embed\" \"npm run delete\"",
+    "test:embeddings": "npm run build && node dist/src/scripts/test-embeddings.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +26,7 @@
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cheerio": "^1.0.0",
+    "concurrently": "^9.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -58,4 +61,3 @@
     "typescript": "^5.8.3"
   }
 }
- 

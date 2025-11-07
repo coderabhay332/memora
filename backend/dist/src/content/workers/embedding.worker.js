@@ -43,11 +43,35 @@ const chunkText = (text, chunkSize = 2000) => {
 };
 const startEmbeddingWorker = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log('🔌 Connecting to RabbitMQ...');
-        const conn = yield amqplib_1.default.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
+        const url = process.env.RABBITMQ_URL || 'amqp://localhost';
+        const masked = url.replace(/(:\/\/[^:]+:)[^@]+(@)/, '$1***$2');
+        console.log('🔌 Connecting to RabbitMQ...', masked);
+        const conn = yield amqplib_1.default.connect(url);
         console.log('✅ Connected to RabbitMQ');
         const channel = yield conn.createChannel();
-        yield channel.assertQueue('embedding_jobs', { durable: true });
+        // Limit unacked messages delivered to this worker to 1 so we don't process
+        // too many large jobs in parallel and run out of memory.
+        try {
+            channel.prefetch(1);
+            console.log('🔒 Channel prefetch set to 1 (one message at a time)');
+        }
+        catch (e) {
+            console.warn('⚠️ Failed to set channel prefetch:', e);
+        }
+        // Passive check to avoid PRECONDITION_FAILED if queue exists with different args
+        try {
+            yield channel.checkQueue('embedding_jobs');
+        }
+        catch (e) {
+            const msg = (e && e.message) || String(e);
+            if ((e && e.code === 404) || msg.includes('NOT_FOUND')) {
+                // Create minimally if not exists
+                yield channel.assertQueue('embedding_jobs', { durable: true });
+            }
+            else {
+                console.warn("⚠️ checkQueue('embedding_jobs') failed:", msg);
+            }
+        }
         console.log("📭 Queue 'embedding_jobs' is ready");
         console.log("✅ Embedding Worker is running and waiting for messages...");
         channel.consume('embedding_jobs', (msg) => __awaiter(void 0, void 0, void 0, function* () {
@@ -209,8 +233,13 @@ const startEmbeddingWorker = () => __awaiter(void 0, void 0, void 0, function* (
                     return results;
                 });
                 if (taggedLinks.length > 0) {
-                    console.log('🚀 Starting link processing');
-                    yield processLinks(taggedLinks);
+                    console.log('🚀 Starting link processing (sequential, memory-friendly)');
+                    // Process links sequentially to avoid spawning many concurrent
+                    // extractors/embedding requests which can blow memory/CPU.
+                    for (const l of taggedLinks) {
+                        // eslint-disable-next-line no-await-in-loop
+                        yield processLinks([l]);
+                    }
                     console.log('🏁 Finished link processing');
                 }
                 // Process clean text
@@ -242,11 +271,13 @@ const startEmbeddingWorker = () => __awaiter(void 0, void 0, void 0, function* (
                             console.error(`❌ Failed to generate embedding for clean text chunk ${i}:`, embeddingError);
                             continue;
                         }
+                        // Keep the stored metadata small: save a snippet instead of whole chunk
+                        const snippet = (typeof chunk === 'string') ? chunk.slice(0, 500) : '';
                         vectors.push({
                             id: chunkId,
                             values: Array.from(embedding),
                             metadata: {
-                                content: chunk,
+                                contentSnippet: snippet,
                                 chunkIndex: i,
                                 userId,
                                 contentId: contentId,
@@ -257,16 +288,21 @@ const startEmbeddingWorker = () => __awaiter(void 0, void 0, void 0, function* (
                     }
                     if (vectors.length > 0) {
                         const validVectors = vectors.filter(v => v.values !== undefined);
-                        if (validVectors.length > 0) {
-                            console.log(`📤 Preparing to upsert ${validVectors.length} vectors for clean text`);
+                        // Upsert in batches to avoid building one huge request in memory
+                        const BATCH_SIZE = 50;
+                        for (let i = 0; i < validVectors.length; i += BATCH_SIZE) {
+                            const batch = validVectors.slice(i, i + BATCH_SIZE);
+                            console.log(`📤 Upserting batch ${i / BATCH_SIZE + 1} with ${batch.length} vectors`);
                             try {
-                                yield (0, pineconeService_1.upsertToPinecone)(validVectors);
-                                console.log(`✅ Successfully upserted ${validVectors.length} vectors for user ${userId} and content ${contentId}`);
+                                // eslint-disable-next-line no-await-in-loop
+                                yield (0, pineconeService_1.upsertToPinecone)(batch);
                             }
                             catch (upsertError) {
-                                console.error('❌ Failed to upsert vectors for clean text:', upsertError);
+                                console.error(`❌ Failed to upsert batch starting at ${i}:`, upsertError);
                             }
                         }
+                        // Help GC by clearing the array reference
+                        vectors.length = 0;
                     }
                 }
                 channel.ack(msg);

@@ -8,6 +8,10 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const messageSchema = new mongoose_1.default.Schema({
     role: { type: String, enum: ["user", "assistant"], required: true },
     message: { type: String, required: true },
+    contentId: { type: String, default: null },
+    sourceInfo: { type: mongoose_1.default.Schema.Types.Mixed, default: null },
+    attribution: { type: String, default: null },
+    contextStats: { type: mongoose_1.default.Schema.Types.Mixed, default: null },
 }, { timestamps: true });
 exports.Message = mongoose_1.default.model("Message", messageSchema);
 const chatSchema = new mongoose_1.default.Schema({

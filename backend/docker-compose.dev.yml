@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend Node.js application (development mode)
   memora-backend-dev:
@@ -9,11 +7,11 @@ services:
     container_name: memora-backend-dev
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
       - NODE_ENV=development
       - PORT=5000
-      - MONGODB_URI=mongodb://mongodb:27017/memora_dev
-      - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
       - mongodb
       - rabbitmq
@@ -25,6 +23,12 @@ services:
       - memora-dev-network
     restart: unless-stopped
     command: npm run start
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
 
   # MongoDB database
   mongodb:

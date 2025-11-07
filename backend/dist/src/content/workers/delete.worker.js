@@ -19,17 +19,25 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 5000;
 const startDeleteWorker = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log('🔌 Connecting to RabbitMQ...');
-        const conn = yield amqplib_1.default.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
+        const url = process.env.RABBITMQ_URL || 'amqp://localhost';
+        const masked = url.replace(/(:\/\/[^:]+:)[^@]+(@)/, '$1***$2');
+        console.log('🔌 Connecting to RabbitMQ...', masked);
+        const conn = yield amqplib_1.default.connect(url);
         console.log('✅ Connected to RabbitMQ');
         const channel = yield conn.createChannel();
-        yield channel.assertQueue('delete_jobs', {
-            durable: true,
-            arguments: {
-                'x-message-ttl': 86400000,
-                'x-max-length': 10000,
+        // Passive check to avoid PRECONDITION_FAILED if queue exists with different args
+        try {
+            yield channel.checkQueue('delete_jobs');
+        }
+        catch (e) {
+            const msg = (e && e.message) || String(e);
+            if ((e && e.code === 404) || msg.includes('NOT_FOUND')) {
+                yield channel.assertQueue('delete_jobs', { durable: true });
             }
-        });
+            else {
+                console.warn("⚠️ checkQueue('delete_jobs') failed:", msg);
+            }
+        }
         console.log("✅ Delete Worker is running and waiting for messages...");
         channel.consume("delete_jobs", (msg) => __awaiter(void 0, void 0, void 0, function* () {
             if (!msg)
