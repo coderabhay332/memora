@@ -28,7 +28,7 @@ declare global {
   app.use(express.json()); // Parses JSON bodies
 
   app.use(cors({
-  origin: ['http://localhost:3000', 'https://memora-gray.vercel.app', 'https://memora.sbs/', 'https://api.memora.sbs/'], // allow these origins
+  origin: ['http://localhost:3000', 'https://memora-gray.vercel.app', 'https://memora.sbs', 'https://api.memora.sbs'], // allow these origins
   credentials: true // allow credentials
 }));
   app.use(helmet()) 
