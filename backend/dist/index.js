@@ -30,7 +30,7 @@ const port = (_a = Number(process.env.PORT)) !== null && _a !== void 0 ? _a : 50
 const app = (0, express_1.default)();
 app.use(express_1.default.json()); // Parses JSON bodies
 app.use((0, cors_1.default)({
-    origin: ['http://localhost:3000', 'https://memora-gray.vercel.app', 'https://memora.sbs/', 'https://api.memora.sbs/'], // allow these origins
+    origin: ['http://localhost:3000', 'https://memora-gray.vercel.app', 'https://memora.sbs', 'https://api.memora.sbs'], // allow these origins
     credentials: true // allow credentials
 }));
 app.use((0, helmet_1.default)());
