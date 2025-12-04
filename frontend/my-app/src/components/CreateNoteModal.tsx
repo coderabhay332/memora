@@ -33,14 +33,14 @@ const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
       {/* Modal container */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all duration-300 animate-in slide-in-from-bottom-4 zoom-in-95">
         {/* Gradient border effect */}
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl opacity-20 blur"></div>
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-black to-gray-800 rounded-2xl opacity-20 blur"></div>
         
         {/* Main modal content */}
         <div className="relative bg-white rounded-2xl">
           {/* Header */}
           <div className="flex items-center justify-between p-6 pb-4">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
+              <div className="p-2 bg-gradient-to-r from-black to-gray-800 rounded-xl">
                 <FileText className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -99,7 +99,7 @@ const CreateNoteModal: React.FC<CreateNoteModalProps> = ({
                 Cancel
               </button>
               <button
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center space-x-2 min-w-[120px] justify-center"
+                className="px-6 py-3 bg-gradient-to-r from-black to-gray-800 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center space-x-2 min-w-[120px] justify-center"
                 onClick={onCreate}
                 disabled={isCreating || !newContent.trim()}
               >

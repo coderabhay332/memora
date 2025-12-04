@@ -3,8 +3,11 @@ import { fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@re
 import { RootState } from '../store/store';
 import { setTokens, resetTokens } from '../store/reducers/authReducer';
 
+const API_BASE_URL = (process.env.REACT_APP_API_URL || 'https://api.memora.sbs/api').replace(/\/$/, '');
+console.log('[API] Base URL =', API_BASE_URL);
+
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: 'https://memora-backend-latest-yyf1.onrender.com/api',
+  baseUrl: API_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken;
     if (token) {
@@ -20,6 +23,11 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     api,
     extraOptions
   ) => {
+    try {
+      const info = typeof args === 'string' ? { url: args, method: 'GET' } : { url: args.url, method: (args as any).method || 'GET' };
+      console.debug('[API][REQUEST]', info.method, info.url, { hasBody: typeof args !== 'string' && !!(args as any).body });
+    } catch {}
+
     let result = await rawBaseQuery(args, api, extraOptions);
   
     if (result.error && result.error.status === 401) {
@@ -54,7 +62,16 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
         api.dispatch(resetTokens());
       }
     }
-  
+    if (result.error) {
+      const info = typeof args === 'string' ? { url: args, method: 'GET' } : { url: (args as any).url, method: (args as any).method || 'GET' };
+      console.warn('[API][ERROR]', info.method, info.url, { status: result.error.status, data: (result as any).data });
+    } else {
+      try {
+        const info = typeof args === 'string' ? { url: args, method: 'GET' } : { url: (args as any).url, method: (args as any).method || 'GET' };
+        console.debug('[API][RESPONSE]', info.method, info.url, { ok: true });
+      } catch {}
+    }
+
     return result;
   };
   

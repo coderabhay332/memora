@@ -43,6 +43,7 @@ router
     .post("/rag/:chatId", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.rag)
     .put("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.updateContent)
     .get("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.getContentById)
+    .get("/source/:contentId", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.getRAGSource)
     .delete("/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.deleteContent)
     .post("/search", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.searchPinecone)
     .post("/chat/:id", (0, role_auth_middleware_1.roleAuth)(["USER"]), contentController.rag);

@@ -50,28 +50,49 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const chatService = __importStar(require("./chat.service"));
 exports.createChat = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
-    console.log("form create chat", userId);
+    console.log("[CHAT][createChat] userId=", userId);
+    console.time("[CHAT][createChat] duration");
     const result = yield chatService.createChat(userId);
+    console.timeEnd("[CHAT][createChat] duration");
+    console.log("[CHAT][createChat] created chatId=", result === null || result === void 0 ? void 0 : result._id);
     res.status(201).json(result);
 }));
 exports.getChat = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const userId = req.user._id;
+    console.log("[CHAT][getChat] userId=", userId, " chatId=", req.params.id);
+    console.time("[CHAT][getChat] duration");
     const result = yield chatService.getChat(req.params.id, userId);
+    console.timeEnd("[CHAT][getChat] duration");
+    console.log("[CHAT][getChat] messages=", (_b = (_a = result === null || result === void 0 ? void 0 : result.messages) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0);
     res.status(200).json(result);
 }));
 exports.deleteChat = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
+    console.log("[CHAT][deleteChat] userId=", userId, " chatId=", req.params.id);
+    console.time("[CHAT][deleteChat] duration");
     const result = yield chatService.deleteChat(req.params.id, userId);
+    console.timeEnd("[CHAT][deleteChat] duration");
+    console.log("[CHAT][deleteChat] deleted chatId=", result === null || result === void 0 ? void 0 : result._id);
     res.status(200).json(result);
 }));
 exports.addMessage = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const userId = req.user._id;
     const { role } = req.body;
+    console.log("[CHAT][addMessage] userId=", userId, " chatId=", req.params.id, " role=", role);
+    console.time("[CHAT][addMessage] duration");
     const result = yield chatService.addMessage(req.params.id, role, req.body.message, userId);
+    console.timeEnd("[CHAT][addMessage] duration");
+    console.log("[CHAT][addMessage] total messages=", (_b = (_a = result === null || result === void 0 ? void 0 : result.messages) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0);
     res.status(201).json(result);
 }));
 exports.getAllChats = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
+    console.log("[CHAT][getAllChats] userId=", userId);
+    console.time("[CHAT][getAllChats] duration");
     const result = yield chatService.getAllChats(userId);
+    console.timeEnd("[CHAT][getAllChats] duration");
+    console.log("[CHAT][getAllChats] count=", Array.isArray(result) ? result.length : 0);
     res.status(200).json(result);
 }));

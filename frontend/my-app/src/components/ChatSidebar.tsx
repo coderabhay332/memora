@@ -55,7 +55,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   };
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+    <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between mb-4">
@@ -74,7 +74,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         <button
           onClick={onNewChat}
           disabled={isLoading}
-          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:transform-none"
+          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-black to-gray-800 text-white rounded-xl hover:from-gray-900 hover:to-black transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:transform-none"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -84,7 +84,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       </div>
 
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
         {isLoading ? (
           <div className="p-4 space-y-3">
             {[...Array(5)].map((_, i) => (
@@ -111,7 +111,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 onClick={() => onChatSelect(chat)}
                 className={`group relative p-3 rounded-lg cursor-pointer transition-all duration-200 ${
                   activeChat?._id === chat._id
-                    ? 'bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200'
+                    ? 'bg-gradient-to-r from-gray-50 to-white border border-gray-200'
                     : 'hover:bg-gray-50'
                 }`}
               >

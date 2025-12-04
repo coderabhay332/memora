@@ -64,7 +64,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
           <button
             key={index}
             onClick={() => setMessage(prompt)}
-            className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-full hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 whitespace-nowrap"
+            className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-full hover:border-gray-300 hover:text-black hover:bg-gray-50 transition-all duration-200 whitespace-nowrap"
           >
             {prompt}
           </button>
@@ -73,7 +73,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
 
       {/* Main Input Area */}
       <form onSubmit={handleSubmit} className="relative">
-        <div className="relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-400">
+        <div className="relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-gray-500/20 focus-within:border-black">
           {/* Input Field */}
           <div className="flex items-end space-x-3 p-4">
             {/* Attachment Button */}
@@ -86,17 +86,17 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
             </button>
 
             {/* Text Input */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative min-w-0">
               <textarea
                 ref={textareaRef}
                 value={message}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
-                className="w-full text-sm bg-transparent border-none resize-none focus:outline-none placeholder-gray-400 text-gray-700 max-h-[120px] min-h-[24px] leading-6"
+                className="w-full text-sm bg-transparent border-none resize-none focus:outline-none placeholder-gray-400 text-gray-700 max-h-[120px] min-h-[24px] leading-6 py-1"
                 rows={1}
                 disabled={isLoading}
-                style={{ height: '24px' }}
+                style={{ height: '40px', minHeight: '40px' }}
               />
               
               {/* Character Counter */}
@@ -145,7 +145,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
                 disabled={!message.trim() || isLoading}
                 className={`flex-shrink-0 p-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center min-w-[48px] ${
                   message.trim() && !isLoading
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 shadow-lg hover:shadow-xl'
+                    ? 'bg-gradient-to-r from-black to-gray-800 text-white hover:from-gray-900 hover:to-black transform hover:scale-105 shadow-lg hover:shadow-xl'
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`}
                 title="Send message"
@@ -162,7 +162,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
           {/* Loading Indicator */}
           {isLoading && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100 rounded-b-2xl overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 animate-pulse"></div>
+              <div className="h-full bg-gradient-to-r from-gray-800 to-black animate-pulse"></div>
             </div>
           )}
         </div>

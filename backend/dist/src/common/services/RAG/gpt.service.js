@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.askOpenAI = void 0;
 const openai_1 = __importDefault(require("openai"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const prompt_templates_1 = require("./prompt-templates");
 dotenv_1.default.config();
 // Initialize OpenAI client with error handling
 let openai;
@@ -30,7 +31,7 @@ catch (error) {
 const countTokensApprox = (text) => {
     return Math.ceil(text.length / 4); // Rough estimate: 1 token ≈ 4 characters
 };
-const askOpenAI = (context, query) => __awaiter(void 0, void 0, void 0, function* () {
+const askOpenAI = (context, query, contentId) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
     // ✅ Input validation
     if (!(query === null || query === void 0 ? void 0 : query.trim()))
@@ -51,15 +52,21 @@ const askOpenAI = (context, query) => __awaiter(void 0, void 0, void 0, function
     const effectiveContext = contextTokenCount > maxContextTokens
         ? context.slice(-maxContextTokens * 4) // Approximate character count
         : context;
+    // Use optimized prompt templates
+    const promptConfig = prompt_templates_1.PromptTemplates.generateGPTPrompt(effectiveContext, query, {
+        maxContextLength: maxContextTokens * 4,
+        includeInstructions: true,
+        responseStyle: 'detailed',
+        includeSourceReferences: true,
+    });
     const messages = [
         {
             role: 'system',
-            content: `You are a helpful assistant. Use the provided context to answer the question. 
-                If the answer isn't in the context, say "I couldn't find that information."`,
+            content: promptConfig.system,
         },
         {
             role: 'user',
-            content: `Context:\n${effectiveContext}\n\nQuestion: ${query}`,
+            content: promptConfig.user,
         },
     ];
     try {
@@ -77,6 +84,7 @@ const askOpenAI = (context, query) => __awaiter(void 0, void 0, void 0, function
         console.log(`✅ OpenAI response in ${Date.now() - startTime}ms`);
         return {
             answer,
+            contentId: contentId || null,
             tokensUsed: (_d = response.usage) === null || _d === void 0 ? void 0 : _d.total_tokens,
             modelUsed: response.model,
         };

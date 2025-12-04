@@ -1,3 +1,20 @@
+export interface SourceInfo {
+  contentId: string;
+  title: string;
+  sourceUrl: string;
+  sourceType: 'content' | 'document' | 'url';
+  metadata?: Record<string, any>;
+  preview?: string;
+}
+
+export interface ContextStats {
+  originalLength: number;
+  optimizedLength: number;
+  relevantChunks: number;
+  queryIntent: string;
+  queryComplexity: string;
+}
+
 export interface IMessage {
   _id: string;
   chatId: string;
@@ -6,6 +23,11 @@ export interface IMessage {
   message: string;
   createdAt?: Date;
   updatedAt?: Date;
+  // Enhanced RAG response fields
+  contentId?: string;
+  sourceInfo?: SourceInfo | null;
+  attribution?: string;
+  contextStats?: ContextStats;
 }
 
 export interface IChat {
