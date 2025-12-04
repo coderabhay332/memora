@@ -129,8 +129,6 @@ export const rag = asyncHandler(async (req: Request, res: Response) => {
     rawContextLength = rawContext.length;
     relevantChunksCount = results.matches?.length || 0;
 
-    // Use optimized context (may be empty) for RAG
-    // Only pass contentId if we have valid, relevant context
     const contentIdToPass = hasValidContext ? contentId : '';
     const ragResponse = await askGemini(userId, id, optimizedContext, query, contentIdToPass);
 
