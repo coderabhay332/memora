@@ -150,8 +150,6 @@ exports.rag = (0, express_async_handler_1.default)((req, res) => __awaiter(void 
         optimizedContext = rawContext;
         rawContextLength = rawContext.length;
         relevantChunksCount = ((_e = results.matches) === null || _e === void 0 ? void 0 : _e.length) || 0;
-        // Use optimized context (may be empty) for RAG
-        // Only pass contentId if we have valid, relevant context
         const contentIdToPass = hasValidContext ? contentId : '';
         const ragResponse = yield (0, gemini_service_1.askGemini)(userId, id, optimizedContext, query, contentIdToPass);
         // Only fetch source info if we have a valid contentId
