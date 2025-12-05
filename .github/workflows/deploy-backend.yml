@@ -49,9 +49,9 @@ jobs:
             npm run build
 
             # Restart all pm2 services
-            pm2 start npm --name "memora-backend" -- run start || pm2 restart memora-backend
-            pm2 start npm --name "memora-embed-job" -- run embed || pm2 restart memora-embed-job
-            pm2 start npm --name "memora-delete-job" -- run delete || pm2 restart memora-delete-job
+            pm2 restart npm --name "memora-backend" -- run start || pm2 restart memora-backend
+            pm2 restart npm --name "memora-embed-job" -- run embed || pm2 restart memora-embed-job
+            pm2 restart npm --name "memora-delete-job" -- run delete || pm2 restart memora-delete-job
             
             pm2 save
 
