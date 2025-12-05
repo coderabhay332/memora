@@ -1,4 +1,4 @@
-name: Deploy Backend to Ubuntu Server
+name: Deploy Memora Backend to Ubuntu Server
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -35,19 +35,25 @@ jobs:
       - name: Deploy to Ubuntu Server
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.SERVER_HOST || '34.226.234.127' }}
-          username: ubuntu  
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || '22' }}
+          port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd //home/ubuntu/memora/backend
-            echo "${{ secrets.BACKEND_ENV }}" > .env
+            cd /home/ubuntu/memora/backend
             git pull origin main
-            cd backend
+
+            echo "${{ secrets.BACKEND_ENV }}" > .env
+
             npm install
             npm run build
-            pm2 restart memora-backend || pm2 start dist/index.js --name memora-backend || pm2 start dist/index.js --name memora-backend --watch
+
+            # Restart all pm2 services
+            pm2 start npm --name "memora-backend" -- run start || pm2 restart memora-backend
+            pm2 start npm --name "memora-embed-job" -- run embed || pm2 restart memora-embed-job
+            pm2 start npm --name "memora-delete-job" -- run delete || pm2 restart memora-delete-job
+            
             pm2 save
 
       - name: Notify deployment success
-        run: echo "Backend successfully deployed to Ubuntu server"
+        run: echo "Memora backend successfully deployed 🚀"

@@ -31,7 +31,11 @@ const Login = () => {
     return null;
   }
 
-  return <LoginComponent />;
+    return (
+      <div>
+        <LoginComponent />
+      </div>
+    );
 };
 
 export default Login;

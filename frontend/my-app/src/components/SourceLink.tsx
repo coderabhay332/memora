@@ -18,7 +18,6 @@ const SourceLink: React.FC<SourceLinkProps> = ({
   showContentIdLink = true
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleSourceClick = () => {
     if (onNavigate) {
@@ -51,8 +50,6 @@ const SourceLink: React.FC<SourceLinkProps> = ({
         <button
           onClick={handleSourceClick}
           className="text-blue-600 hover:text-blue-800 underline font-medium"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
         >
           {sourceInfo.title}
         </button>
@@ -64,8 +61,6 @@ const SourceLink: React.FC<SourceLinkProps> = ({
   return (
     <div 
       className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 transition-all duration-200 hover:shadow-md"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Source Header */}
       <div className="flex items-start justify-between">

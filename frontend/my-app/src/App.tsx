@@ -4,9 +4,11 @@ import Signup from "./pages/signup";
 import Dashboard from "./pages/dashboard";
 import MemoraLanding from "./pages/landing";
 import ContentRoute from "./pages/content";
+import { Toaster } from 'react-hot-toast';
 function App() {
   return (
     <>
+      <Toaster position="top-center" />
     <Routes>
 
     

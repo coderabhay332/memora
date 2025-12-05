@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, Loader2, ArrowRight, Shield } from 'lucide-react';
 import { setTokens } from '../store/reducers/authReducer';
 import { useDispatch } from 'react-redux';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useLoginMutation } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Login from '../pages/login';
@@ -63,7 +63,6 @@ const LoginComponent = () => {
 
   return (
     <>
-      <Toaster position="top-center" />
       
       <div className="min-h-screen bg-white flex">
         {/* Left Side - Branding */}
