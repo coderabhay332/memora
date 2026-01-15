@@ -237,7 +237,7 @@ export const getContentById = asyncHandler(async (req: Request, res: Response) =
      res.status(400).send(createResponse(null, "User ID is required"));
     return;
   }
-  const result = await contentService.getContentById(req.params.id, userId);
+  const result = await contentService.getContentById(String(req.params.id), userId);
   res.send(createResponse(result, "Content fetched successfully"));
 });
 
@@ -258,7 +258,7 @@ export const getRAGSource = asyncHandler(async (req: Request, res: Response) => 
 
   try {
     // Get detailed source information
-    const sourceInfo = await SourceInfoService.getSourceInfo(contentId, userId);
+    const sourceInfo = await SourceInfoService.getSourceInfo(String(contentId), userId);
     
     if (!sourceInfo) {
       res.status(404).send(createResponse(null, "Content not found or access denied"));
@@ -266,7 +266,7 @@ export const getRAGSource = asyncHandler(async (req: Request, res: Response) => 
     }
 
     // Get full content for the source
-    const fullContent = await contentService.getContentById(contentId, userId);
+    const fullContent = await contentService.getContentById(String(contentId), userId);
     
     res.send(createResponse({
       sourceInfo,
@@ -288,7 +288,7 @@ export const updateContent = asyncHandler(async (req: Request, res: Response) =>
      res.status(400).send(createResponse(null, "User ID is required"));
     return;
   }
-  const result = await contentService.updateContent(req.params.id, req.body.content, userId);
+  const result = await contentService.updateContent(String(req.params.id), req.body.content, userId);
   res.send(createResponse(result, "Content updated successfully"));
 });
 
@@ -300,7 +300,7 @@ export const deleteContent = asyncHandler(async (req: Request, res: Response) =>
   }
   
   try {
-    const result = await contentService.deleteContent(req.params.id, userId);
+    const result = await contentService.deleteContent(String(req.params.id), userId);
 
     if (!result) {
       res.status(404).send(createResponse(null, "Content not found"));

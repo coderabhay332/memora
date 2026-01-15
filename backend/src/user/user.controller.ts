@@ -16,22 +16,22 @@ export const me = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateUser = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.updateUser(req.params.id, req.body);
+  const result = await userService.updateUser(String(req.params.id), req.body);
   res.send(createResponse(result, "User updated sucssefully"));
 });
 
 export const editUser = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.editUser(req.params.id, req.body);
+  const result = await userService.editUser(String(req.params.id), req.body);
   res.send(createResponse(result, "User updated sucssefully"));
 });
 
 export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.deleteUser(req.params.id);
+  const result = await userService.deleteUser(String(req.params.id));
   res.send(createResponse(result, "User deleted sucssefully"));
 });
 
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.getUserById(req.params.id);
+  const result = await userService.getUserById(String(req.params.id));
   res.send(createResponse(result));
 });
 
