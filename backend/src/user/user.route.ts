@@ -10,6 +10,8 @@ router.
   post("/create", userValidation.createUser, userController.createUser)
   .post("/login", userValidation.login, passport.authenticate('login', { session: false }), userController.login)
   .post("/refresh", userValidation.refreshToken, userController.refreshToken)
+  .post("/forget-password", userValidation.forgetPassword, userController.forgetPassword)
+  .post("/reset-password", userValidation.resetPassword, userController.resetPassword)
   .get("/me", roleAuth(["USER", "admin"]), userController.me);
 
 

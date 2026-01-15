@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refreshToken = exports.updateUserToken = exports.getUserByEmail = exports.login = exports.getAllUser = exports.getUserById = exports.deleteUser = exports.editUser = exports.me = exports.updateUser = exports.createUser = exports.generateRefreshToken = void 0;
+exports.refreshToken = exports.forgetPassword = exports.updateUserToken = exports.getUserByEmail = exports.login = exports.getAllUser = exports.getUserById = exports.deleteUser = exports.editUser = exports.me = exports.updateUser = exports.createUser = exports.generateRefreshToken = void 0;
 const user_schema_1 = __importDefault(require("./user.schema"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const passport_jwt_services_1 = require("../common/services/passport-jwt.services");
 require('dotenv').config();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_helper_1 = require("../common/helper/config.helper");
+const email_helper_1 = __importDefault(require("../common/helper/email.helper"));
 (0, config_helper_1.loadConfig)();
 const generateRefreshToken = (id, role) => {
     return jsonwebtoken_1.default.sign({ id, role }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
@@ -95,6 +96,18 @@ const updateUserToken = (user, refreshToken) => __awaiter(void 0, void 0, void 0
     return result;
 });
 exports.updateUserToken = updateUserToken;
+const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!email)
+        throw new Error("No email found");
+    const userData = yield user_schema_1.default.findOne({ email });
+    if (!userData) {
+        throw new Error("No email found");
+    }
+    console.log("user data", userData);
+    const resetToken = jsonwebtoken_1.default.sign({ id: userData._id }, process.env.JWT_RESET_PASSWORD_SECRET, { expiresIn: '1h' });
+    (0, email_helper_1.default)(email, "Password Reset Request", `<p>You requested a password reset. Click <a href="${process.env.FRONTEND_URL}/reset-password?token=${resetToken}">here</a> to reset your password.</p>`);
+});
+exports.forgetPassword = forgetPassword;
 const refreshToken = (user, refreshToken) => __awaiter(void 0, void 0, void 0, function* () {
     if (!refreshToken)
         throw new Error("No refresh token provided");

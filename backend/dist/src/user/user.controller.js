@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refreshToken = exports.login = exports.getAllUser = exports.getUserById = exports.deleteUser = exports.editUser = exports.updateUser = exports.me = exports.createUser = void 0;
+exports.forgetPassword = exports.refreshToken = exports.login = exports.getAllUser = exports.getUserById = exports.deleteUser = exports.editUser = exports.updateUser = exports.me = exports.createUser = void 0;
 const userService = __importStar(require("./user.service"));
 const response_helper_1 = require("../common/helper/response.helper");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
@@ -93,4 +93,8 @@ exports.refreshToken = (0, express_async_handler_1.default)((req, res) => __awai
         console.error("Refresh token error:", error.message);
         res.status(401).send((0, response_helper_1.createResponse)(null, "Invalid refresh token"));
     }
+}));
+exports.forgetPassword = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield userService.forgetPassword(req.body.email);
+    res.send((0, response_helper_1.createResponse)(result, "Password reset email sent successfully"));
 }));

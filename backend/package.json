@@ -1,14 +1,18 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+
     "build": "npx tsc",
-    "start": "tsc -b && node --max-old-space-size=7680 dist/index.js",
-    "embed": "node --max-old-space-size=6144 dist/src/content/workers/embedding.worker.js",
-    "delete": "node --max-old-space-size=2048 dist/src/content/workers/delete.worker.js",
-    "start:all": "concurrently \"npm run start\" \"npm run embed\" \"npm run delete\"",
+
+    "start": "node dist/index.js",
+
+    "start:api": "node dist/index.js",
+    "start:embed": "node dist/src/content/workers/embedding.worker.js",
+    "start:delete": "node dist/src/content/workers/delete.worker.js",
+
     "test:embeddings": "npm run build && node dist/src/scripts/test-embeddings.js"
   },
   "keywords": [],
@@ -38,6 +42,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0",
     "morgan": "^1.10.0",
+    "nodemailer": "^7.0.11",
     "openai": "^5.8.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -55,6 +60,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.15.19",
+    "@types/nodemailer": "^7.0.4",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",

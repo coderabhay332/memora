@@ -46,5 +46,6 @@ router.
     post("/create", userValidation.createUser, userController.createUser)
     .post("/login", userValidation.login, passport_1.default.authenticate('login', { session: false }), userController.login)
     .post("/refresh", userValidation.refreshToken, userController.refreshToken)
+    .post("/forget-password", userValidation.forgetPassword, userController.forgetPassword)
     .get("/me", (0, role_auth_middleware_1.roleAuth)(["USER", "admin"]), userController.me);
 exports.default = router;

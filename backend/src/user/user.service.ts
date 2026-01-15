@@ -6,6 +6,7 @@ import { createUserTokens } from "../common/services/passport-jwt.services";
 require('dotenv').config();
 import jwt from "jsonwebtoken";
 import { loadConfig } from "../common/helper/config.helper";
+import sendEmail from "../common/helper/email.helper";
 
 loadConfig();
 
@@ -98,6 +99,28 @@ export const updateUserToken = async (user: IUser, refreshToken: string) => {
   return result;
 };
 
+export const forgetPassword = async (email: string) => {
+
+  if(!email) throw new Error("No email found");
+  const userData = await userSchema.findOne({email});
+  if(!userData){
+    throw new Error("No email found");
+  }
+  console.log("user data", userData)
+
+  const resetToken = jwt.sign(
+    { id: userData._id },
+    process.env.JWT_SECRET as string,
+    { expiresIn: '1h' }
+  );
+
+  sendEmail(
+    email,
+    "Password Reset Request",
+    `<p>You requested a password reset. Click <a href="${process.env.FRONTEND_URL}/reset-password?token=${resetToken}">here</a> to reset your password.</p>`
+  );
+}
+
 export const refreshToken = async (user: IUser, refreshToken: string) => {
   if (!refreshToken) throw new Error("No refresh token provided");
 
@@ -121,3 +144,13 @@ export const refreshToken = async (user: IUser, refreshToken: string) => {
   };
 };
 
+export const resetPassword = async(token: string, newPassword: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };  
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const result = await userSchema.findByIdAndUpdate(decoded.id, { password: hashedPassword });
+    return result;
+  } catch (error) {
+    throw new Error("Invalid or expired token");
+  }
+}

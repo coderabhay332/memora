@@ -55,3 +55,13 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
     res.status(401).send(createResponse(null, "Invalid refresh token"));
   }
 });
+
+export const forgetPassword = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.forgetPassword(req.body.email);
+  res.send(createResponse(result, "Password reset email sent successfully"));
+});
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.resetPassword(req.body.token, req.body.newPassword);
+  res.send(createResponse(result, "Password has been reset successfully"));
+});

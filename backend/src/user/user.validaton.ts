@@ -45,3 +45,11 @@ export const editUser = [
 export const refreshToken = [
     body("refreshToken").notEmpty().withMessage("Refresh token is required"),
 ]
+
+export const forgetPassword = [
+    body("email").notEmpty().withMessage("Email is required").isEmail().withMessage("Email must be valid"),
+]
+
+export const resetPassword = [
+    body("newPassword").notEmpty().withMessage("New password is required").isString().withMessage("New password must be a string"),
+]
