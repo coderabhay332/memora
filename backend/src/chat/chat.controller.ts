@@ -18,7 +18,7 @@ export const getChat = asyncHandler(async (req, res) => {
     const userId = (req.user as IUser)._id;
     console.log("[CHAT][getChat] userId=", userId, " chatId=", req.params.id);
     console.time("[CHAT][getChat] duration");
-    const result = await chatService.getChat(req.params.id, userId);
+    const result = await chatService.getChat(String(req.params.id), userId);
     console.timeEnd("[CHAT][getChat] duration");
     console.log("[CHAT][getChat] messages=", result?.messages?.length ?? 0);
     res.status(200).json(result);
@@ -28,7 +28,7 @@ export const deleteChat = asyncHandler(async (req, res) => {
     const userId = (req.user as IUser)._id;
     console.log("[CHAT][deleteChat] userId=", userId, " chatId=", req.params.id);
     console.time("[CHAT][deleteChat] duration");
-    const result = await chatService.deleteChat(req.params.id, userId);
+    const result = await chatService.deleteChat(String(req.params.id), userId);
     console.timeEnd("[CHAT][deleteChat] duration");
     console.log("[CHAT][deleteChat] deleted chatId=", result?._id);
     res.status(200).json(result);
@@ -39,7 +39,7 @@ export const addMessage = asyncHandler(async (req, res) => {
     const {role} = req.body;
     console.log("[CHAT][addMessage] userId=", userId, " chatId=", req.params.id, " role=", role);
     console.time("[CHAT][addMessage] duration");
-    const result = await chatService.addMessage(req.params.id, role, req.body.message, userId);
+    const result = await chatService.addMessage(String(req.params.id), role, req.body.message, userId);
     console.timeEnd("[CHAT][addMessage] duration");
     console.log("[CHAT][addMessage] total messages=", result?.messages?.length ?? 0);
     res.status(201).json(result);
