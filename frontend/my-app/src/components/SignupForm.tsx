@@ -170,7 +170,7 @@ const SignupComponent = () => {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed mb-4"
             >
               {isLoading ? (
                 <>
@@ -184,6 +184,9 @@ const SignupComponent = () => {
                 </>
               )}
             </button>
+            <p className="text-sm text-gray-500 text-center">
+              By subscribing, you agree to our <a href="/terms-and-conditions" className="text-black hover:underline" target="_blank" rel="noopener noreferrer">Terms & Conditions</a> and <a href="/refund-policy" className="text-black hover:underline" target="_blank" rel="noopener noreferrer">Refund Policy</a>.
+            </p>
 
             {/* Divider */}
             <div className="relative my-8">
