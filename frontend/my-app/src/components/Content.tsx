@@ -10,7 +10,7 @@ import { useCreateContentMutation, useDeleteContentMutation, useUpdateContentMut
 import { useGetAllContentQuery } from '../services/api';
 import { ContentItem } from '../types';
 import { useMeQuery } from '../services/api';
-import { Search, Plus, Grid3X3, List, Filter, SortDesc, MoreVertical } from 'lucide-react';
+import { Search, Plus, Grid3X3, List, SortDesc } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { resetTokens } from '../store/reducers/authReducer';

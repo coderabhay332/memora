@@ -83,7 +83,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     if (chat?.messages && chat.messages.length > 0 && isNearBottom) {
       setTimeout(() => scrollToBottom(), 100);
     }
-  }, [chat?.messages?.length, isNearBottom]);
+  }, [chat?.messages, isNearBottom]);
 
   // Set up scroll listener
   useEffect(() => {
