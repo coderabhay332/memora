@@ -86,7 +86,7 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
     );
   }
 
-  const { sourceInfo, fullContent, navigationUrl, canEdit, canDelete } = sourceData.data;
+  const { sourceInfo, fullContent, canEdit, canDelete } = sourceData.data;
 
   return (
     <div className="min-h-screen bg-gray-50">

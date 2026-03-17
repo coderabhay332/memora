@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IMessage } from '../types/chat';
-import { Copy, Check, Bot, User, Sparkles, Clock, FileText, ExternalLink } from 'lucide-react';
+import { Copy, Check, Bot, User, Sparkles, Clock, FileText } from 'lucide-react';
 import SourceLink from './SourceLink';
 
 interface MessageBubbleProps {

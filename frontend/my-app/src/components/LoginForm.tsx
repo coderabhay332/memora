@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useLoginMutation } from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import Login from '../pages/login';
 
 const LoginComponent = () => {
   const [loginUser] = useLoginMutation();
