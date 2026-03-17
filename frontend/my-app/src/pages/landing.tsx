@@ -304,20 +304,20 @@ const MemoraLanding = () => {
             <div>
               <h4 className="font-bold mb-4">Product</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Roadmap</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">Features</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">Pricing</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">Security</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">Roadmap</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-bold mb-4">Company</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">About</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">Careers</a></li>
+                <li><a href="/" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
             
@@ -336,9 +336,9 @@ const MemoraLanding = () => {
               © 2025 Memora. All rights reserved.
             </p>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Twitter</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">GitHub</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">LinkedIn</a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">Twitter</a>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">GitHub</a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">LinkedIn</a>
             </div>
           </div>
         </div>
